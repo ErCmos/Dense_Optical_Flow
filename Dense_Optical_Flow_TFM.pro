@@ -12,15 +12,20 @@ TARGET = Dense_Optical_Flow_TFM
 TEMPLATE = app
 
 INCLUDEPATH += /usr/local/include/opencv
-LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs
+LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs -lopencv_video
 
 SOURCES += main.cpp\
         mainwindow.cpp \
     video_player.cpp \
-    densetrack.cpp
+    densetrack.cpp \
+    tracker.cpp
 
 HEADERS  += mainwindow.h \
     video_player.h \
-    densetrack.h
+    densetrack.h \
+    descriptors.h \
+    initialize.h \
+    opticalflow.h \
+    tracker.h
 
 FORMS    += mainwindow.ui

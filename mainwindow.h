@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <video_player.h>
+#include <densetrack.h>
 
 namespace Ui {
 class MainWindow;
@@ -19,6 +20,12 @@ public:
 
 private slots:
     void on_OpenVideo_clicked();
+
+    void on_ShowTrack_clicked();
+
+    void on_ParametrosCheckBox_clicked();
+
+    void on_ProcesarButton_clicked();
 
 private:
     Ui::MainWindow *ui;

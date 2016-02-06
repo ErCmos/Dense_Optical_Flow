@@ -6,11 +6,18 @@
 //#include "opencv2/xfeatures2d.hpp"
 #include <opencv2/opencv.hpp>
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->StartFrame->setInputMask("9");
+    ui->EndFrame->setInputMask("9");
+    if (ui->ParametrosCheckBox->isChecked())
+        ui->Parametros->setEnabled(true);
+    else
+        ui->Parametros->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -32,4 +39,27 @@ void MainWindow::on_OpenVideo_clicked()
     player=video_player.Capturer(fileName.toStdString());
     video_player.Player(player,"Vídeo");
     video_player.Player_DOF(fileName.toStdString(),"Vídeo_DOF");
+}
+
+void MainWindow::on_ShowTrack_clicked()
+{
+
+}
+
+void MainWindow::on_ParametrosCheckBox_clicked()
+{
+    if (ui->ParametrosCheckBox->isChecked())
+        ui->Parametros->setEnabled(true);
+    else
+        ui->Parametros->setEnabled(false);
+}
+
+void MainWindow::on_ProcesarButton_clicked()
+{
+    DenseTrack procesar;
+    if (ui->ParametrosCheckBox->isChecked())
+    {
+        procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(),ui->Parametros)
+    }
+    procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(),ui->ParametrosCheckBox->isChecked(),ui->StartFrame->text().toInt(),ui->EndFrame->text().toInt());
 }
