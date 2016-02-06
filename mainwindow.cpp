@@ -31,4 +31,5 @@ void MainWindow::on_OpenVideo_clicked()
     //cv::VideoCapture cap=Capturer.OpenVideoFile(fileName.toStdString());
     player=video_player.Capturer(fileName.toStdString());
     video_player.Player(player,"Vídeo");
+    video_player.Player_DOF(fileName.toStdString(),"Vídeo_DOF");
 }
