@@ -1,17 +1,82 @@
 #ifndef TRACKER_H
 #define TRACKER_H
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
-#include <string.h>
-//MessageBox
-#include <QMessageBox>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include <opencv/cxcore.h>
+
+#include <unistd.h>
+
+using namespace cv;
+
+
+static int start_frame = 0;
+static int end_frame = INT_MAX;
+static int scale_num = 8;
+static const float scale_stride = sqrt(2);
+
+// parameters for descriptors
+static int patch_size = 32;
+static int nxy_cell = 2;
+static int nt_cell = 3;
+static float epsilon = 0.05;
+static const float min_flow = 0.4;
+
+// parameters for tracking
+static double quality = 0.001;
+static int min_distance = 5;
+static int init_gap = 1;
+static int track_length = 15;
+
+// parameters for rejecting trajectory
+static const float min_var = sqrt(3);
+static const float max_var = 50;
+static const float max_dis = 20;
+
+typedef struct {
+    int x;       // top left corner
+    int y;
+    int width;
+    int height;
+}RectInfo;
+
+typedef struct {
+    int width;   // resolution of the video
+    int height;
+    int length;  // number of frames
+}SeqInfo;
+
+typedef struct {
+    int length;  // length of the trajectory
+    int gap;     // initialization gap for feature re-sampling
+}TrackInfo;
+
+typedef struct {
+    int nBins;   // number of bins for vector quantization
+    bool isHof;
+    int nxCells; // number of cells in x direction
+    int nyCells;
+    int ntCells;
+    int dim;     // dimension of the descriptor
+    int height;  // size of the block for computing the descriptor
+    int width;
+}DescInfo;
+
+// integral histogram for the descriptors
+typedef struct {
+    int height;
+    int width;
+    int nBins;
+    float* desc;
+}DescMat;
 
 class Tracker
 {
 public:
     Tracker();
     ~Tracker();
+    //int Trackeador(bool show_track, std::string fileName, bool parametros);
+
 };
 
 #endif // TRACKER_H

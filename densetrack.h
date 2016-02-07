@@ -6,9 +6,17 @@
 #include <opencv/cxcore.h>
 
 #include <unistd.h>
+#include <tracker.h>
 
 using namespace cv;
 
+//#ifndef DENSETRACK_H
+/* code */
+//#else
+/* code to include if the token is defined */
+//#endif
+
+/*
 int start_frame = 0;
 int end_frame = INT_MAX;
 int scale_num = 8;
@@ -68,7 +76,7 @@ typedef struct {
     int nBins;
     float* desc;
 }DescMat;
-
+*/
 class Track
 {
 public:
@@ -100,7 +108,9 @@ class DenseTrack
 public:
     DenseTrack();
     ~DenseTrack();    
-    int Tracker(bool show_track, std::string fileName, bool parametros, int FrameInicio, int FrameFinal);
+    //int Tracker(bool show_track, std::string fileName, bool parametros, int FrameInicio, int FrameFinal);
+    int Tracker(bool show_track, std::string fileName, bool parametros, int start_frame=0, int end_frame=INT_MAX, int track_length = 15, int min_distance = 5, int patch_size = 23, int nxy_cell = 2, int nt_cell = 3, int scale_num = 8, int init_gap = 1);
+    //int Tracker(bool show_track, std::string fileName, bool parametros);
 };
 
 #endif // DENSETRACK_H

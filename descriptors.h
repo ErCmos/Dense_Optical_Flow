@@ -1,7 +1,11 @@
 #ifndef DESCRIPTORS
 #define DESCRIPTORS
 
-#include "densetrack.h"
+//#include "densetrack.h"
+#include "tracker.h"
+
+//extern int start_frame;
+
 using namespace cv;
 
 // get the rectangle for computing the descriptor

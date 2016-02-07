@@ -5,6 +5,12 @@
 #include <QFileDialog>
 #include <video_player.h>
 #include <densetrack.h>
+//#include <tracker.h>
+
+#include <QMessageBox>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include <opencv/cxcore.h>
 
 namespace Ui {
 class MainWindow;

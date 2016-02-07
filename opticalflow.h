@@ -1,7 +1,10 @@
 #ifndef OPTICALFLOW
 #define OPTICALFLOW
 
-#include "densetrack.h"
+//#include "densetrack.h"
+#include "tracker.h"
+
+//extern int start_frame;
 
 #include <time.h>
 
