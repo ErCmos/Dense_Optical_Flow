@@ -18,7 +18,10 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     video_player.cpp \
     densetrack.cpp \
-    tracker.cpp
+    tracker.cpp \
+    descriptors.cpp \
+    initialize.cpp \
+    opticalflow.cpp
 
 HEADERS  += mainwindow.h \
     video_player.h \

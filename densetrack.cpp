@@ -16,6 +16,8 @@ DenseTrack::~DenseTrack()
 }
 
 using namespace cv;
+using namespace constantes;
+
 //extern int scale_num;
 //int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, int FrameInicio, int FrameFinal)
 int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, int start_frame, int end_frame, int track_length, int min_distance, int patch_size, int nxy_cell, int nt_cell, int scale_num, int init_gap)
@@ -94,12 +96,12 @@ int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, 
                 BuildPry(sizes, CV_32FC(5), prev_poly_pyr);
                 BuildPry(sizes, CV_32FC(5), poly_pyr);
 
-                xyScaleTracks.resize(scale_num);
+                xyScaleTracks.resize(constantes::scale_num);
 
                 frame.copyTo(image);
                 cvtColor(image, prev_grey, CV_BGR2GRAY);
 
-                for(int iScale = 0; iScale < scale_num; iScale++) {
+                for(int iScale = 0; iScale < constantes::scale_num; iScale++) {
                     if(iScale == 0)
                         prev_grey.copyTo(prev_grey_pyr[0]);
                     else
@@ -130,7 +132,7 @@ int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, 
             my::FarnebackPolyExpPyr(grey, poly_pyr, fscales, 7, 1.5);
             my::calcOpticalFlowFarneback(prev_poly_pyr, poly_pyr, flow_pyr, 10, 2);
 
-            for(int iScale = 0; iScale < scale_num; iScale++) {
+            for(int iScale = 0; iScale < constantes::scale_num; iScale++) {
                 if(iScale == 0)
                     grey.copyTo(grey_pyr[0]);
                 else
@@ -232,7 +234,7 @@ int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, 
 
             init_counter = 0;
             grey.copyTo(prev_grey);
-            for(i = 0; i < scale_num; i++) {
+            for(i = 0; i < constantes::scale_num; i++) {
                 grey_pyr[i].copyTo(prev_grey_pyr[i]);
                 poly_pyr[i].copyTo(prev_poly_pyr[i]);
             }

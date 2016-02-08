@@ -8,8 +8,9 @@
 #include <unistd.h>
 
 using namespace cv;
-
-
+/*
+namespace constantes
+{
 static int start_frame = 0;
 static int end_frame = INT_MAX;
 static int scale_num = 8;
@@ -32,6 +33,34 @@ static int track_length = 15;
 static const float min_var = sqrt(3);
 static const float max_var = 50;
 static const float max_dis = 20;
+}
+*/
+
+namespace constantes
+{
+extern int start_frame;
+extern int end_frame;
+extern int scale_num;
+extern const float scale_stride;
+
+// parameters for descriptors
+extern int patch_size;
+extern int nxy_cell;
+extern int nt_cell;
+extern float epsilon;
+extern const float min_flow;
+
+// parameters for tracking
+extern double quality;
+extern int min_distance;
+extern int init_gap;
+extern int track_length ;
+
+// parameters for rejecting trajectory
+extern const float min_var;
+extern const float max_var;
+extern const float max_dis;
+}
 
 typedef struct {
     int x;       // top left corner
