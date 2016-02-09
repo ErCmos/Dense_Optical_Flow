@@ -2,7 +2,7 @@
 #define VIDEO_PLAYER_H
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <string.h>
 //MessageBox
 #include <QMessageBox>
