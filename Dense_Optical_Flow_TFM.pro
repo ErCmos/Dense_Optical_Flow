@@ -12,7 +12,7 @@ TARGET = Dense_Optical_Flow_TFM
 TEMPLATE = app
 
 INCLUDEPATH += /usr/local/include/opencv
-LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs -lopencv_video
+LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_video
 
 SOURCES += main.cpp\
         mainwindow.cpp \

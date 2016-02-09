@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->StartFrame->setInputMask("9999999999");
     ui->EndFrame->setInputMask("9999999999");
+    //QString s = QString::number(constantes::end_frame);
+    ui->EndFrame->setText(QString::number(constantes::end_frame));
     ui->TrajectoryLength->setInputMask("999");
     ui->SamplingStride->setInputMask("999");
     ui->NeighborhoodSize->setInputMask("999");
