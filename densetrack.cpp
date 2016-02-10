@@ -87,9 +87,9 @@ int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, 
                 grey.create(frame.size(), CV_8UC1);
                 prev_grey.create(frame.size(), CV_8UC1);
 
-                InitPry(frame, fscales, sizes);
+                InitPry(frame, fscales, sizes); //fscales Scale Factors correspond to sizes images from the original frame
 
-                BuildPry(sizes, CV_8UC1, prev_grey_pyr);
+                BuildPry(sizes, CV_8UC1, prev_grey_pyr);    //Generate the necesary images and structures for each scale
                 BuildPry(sizes, CV_8UC1, grey_pyr);
 
                 BuildPry(sizes, CV_32FC2, flow_pyr);
@@ -98,12 +98,12 @@ int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, 
 
                 xyScaleTracks.resize(constantes::scale_num);
 
-                frame.copyTo(image);
-                cvtColor(image, prev_grey, CV_BGR2GRAY);
+                frame.copyTo(image);                        //Copy actual frame to image
+                cvtColor(image, prev_grey, CV_BGR2GRAY);    //copy image as grey in prev_grey
 
                 for(int iScale = 0; iScale < constantes::scale_num; iScale++) {
                     if(iScale == 0)
-                        prev_grey.copyTo(prev_grey_pyr[0]);
+                        prev_grey.copyTo(prev_grey_pyr[0]); //Original image
                     else
                         resize(prev_grey_pyr[iScale-1], prev_grey_pyr[iScale], prev_grey_pyr[iScale].size(), 0, 0, INTER_LINEAR);
 
@@ -122,8 +122,8 @@ int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, 
 
                 frame_num++;
                 continue;
-            }
-
+            }//First Frame
+            //Next Frames
             init_counter++;
             frame.copyTo(image);
             cvtColor(image, grey, CV_BGR2GRAY);
