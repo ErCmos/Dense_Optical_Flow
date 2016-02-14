@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <video_player.h>
 #include <densetrack.h>
+#include "classifier.h"
 //#include <tracker.h>
 
 #include <QMessageBox>
@@ -32,6 +33,14 @@ private slots:
     void on_ParametrosCheckBox_clicked();
 
     void on_ProcesarButton_clicked();
+
+    void on_CrearDiccButton_clicked();
+
+    void on_DOFDirectorioButton_clicked();
+
+    void on_DOFDirDiccButton_clicked();
+
+    void on_TrainSVMButton_clicked();
 
 private:
     Ui::MainWindow *ui;

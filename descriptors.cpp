@@ -294,17 +294,29 @@ void DrawTrack(const std::vector<Point2f>& point, const int index, const float s
 }
 
 void PrintDesc(std::vector<float>& desc, DescInfo& descInfo, TrackInfo& trackInfo)
+//char * PrintDesc(std::vector<float>& desc, DescInfo& descInfo, TrackInfo& trackInfo)
+//float PrintDesc(std::vector<float>& desc, DescInfo& descInfo, TrackInfo& trackInfo)
 {using namespace constantes;
+    //char *sal = new char;
     int tStride = cvFloor(trackInfo.length/descInfo.ntCells);
     float norm = 1./float(tStride);
     int dim = descInfo.dim;
     int pos = 0;
+
     for(int i = 0; i < descInfo.ntCells; i++) {
         std::vector<float> vec(dim);
         for(int t = 0; t < tStride; t++)
             for(int j = 0; j < dim; j++)
                 vec[j] += desc[pos++];
         for(int j = 0; j < dim; j++)
+        {
             printf("%.7f\t", vec[j]*norm);
+
+            //sprintf(sal,"%.7f\t", vec[j]*norm);
+            //return vec[j]*norm;
+
+            //sprintf(salida +strlen(salida),"%.7f\t", vec[j]*norm);
+        }
     }
+//free(sal);
 }

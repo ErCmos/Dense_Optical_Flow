@@ -27,7 +27,8 @@ void BuildPry(const std::vector<Size>& sizes, const int type, std::vector<Mat>& 
 void DrawTrack(const std::vector<Point2f>& point, const int index, const float scale, Mat& image);
 
 void PrintDesc(std::vector<float>& desc, DescInfo& descInfo, TrackInfo& trackInfo);
-
+//char * PrintDesc(std::vector<float>& desc, DescInfo& descInfo, TrackInfo& trackInfo);
+//float PrintDesc(std::vector<float>& desc, DescInfo& descInfo, TrackInfo& trackInfo);
 
 
 #endif // DESCRIPTORS

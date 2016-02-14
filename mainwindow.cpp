@@ -79,3 +79,72 @@ void MainWindow::on_ProcesarButton_clicked()
 //    DenseTrack procesar;
 //    procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(), ui->ParametrosCheckBox->isChecked());
 }
+
+void MainWindow::on_CrearDiccButton_clicked()
+{
+    QString fullName = QFileDialog::getOpenFileName(this,
+            tr("Open Diccionary"), "/home/ercmos", tr("Diccionary Files (*.txt)"));
+
+    QString dirName = QFileInfo(fullName).absolutePath();
+    QString fileName = QFileInfo(fullName).fileName();
+
+    BoW saco;
+    saco.CrearDiccionario(fileName.toStdString(),dirName.toStdString());
+}
+
+void MainWindow::on_DOFDirectorioButton_clicked()
+{
+    QString fullName = QFileDialog::getOpenFileName(this,
+            tr("Open Diccionary"), "/home/ercmos", tr("Diccionary Files (*.avi)"));
+
+    QString dirName = QFileInfo(fullName).absolutePath();
+    //QString fileName = QFileInfo(fullName).fileName();
+
+    DenseTrack procesar;
+    if (ui->ParametrosCheckBox->isChecked())
+    {
+        procesar.TrackerDirectory(ui->ShowTrack->isChecked(),dirName.toStdString(), ui->ParametrosCheckBox->isChecked(), ui->StartFrame->text().toInt(),ui->EndFrame->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->SamplingStride->text().toInt(),ui->NeighborhoodSize->text().toInt(),ui->SpatialCells->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->ScaleNumber->text().toInt(),ui->InitialGap->text().toInt());
+    }
+    else
+    {
+        procesar.TrackerDirectory(ui->ShowTrack->isChecked(),dirName.toStdString(), ui->ParametrosCheckBox->isChecked());
+    }
+}
+
+void MainWindow::on_DOFDirDiccButton_clicked()
+{
+    QString fullName = QFileDialog::getOpenFileName(this,
+            tr("Open Diccionary"), "/home/ercmos", tr("Diccionary Files (*.txt)"));
+
+    QString dirName = QFileInfo(fullName).absolutePath();
+    QString fileName = QFileInfo(fullName).fileName();
+
+    BoW saco;
+    saco.CrearDiccionarioDirectorio(dirName.toStdString());
+}
+
+void MainWindow::on_TrainSVMButton_clicked()
+{
+    QString fullName = QFileDialog::getOpenFileName(this,
+            tr("Open Diccionary"), "/home/ercmos", tr("Diccionary Files (*.yml)"));
+
+    //QString dirName = QFileInfo(fullName).absolutePath();
+    QString fileName = QFileInfo(fullName).fileName();
+    string extension;
+    string fichero;
+
+    if(fileName.toStdString().find_last_of(".") != std::string::npos)
+            extension = fileName.toStdString().substr(fileName.toStdString().find_last_of(".")+1);
+            fichero = fileName.toStdString().substr(0,fileName.toStdString().find_last_of("."));
+
+    Mat vocabulary;
+    FileStorage fs(fullName.toStdString().c_str(), FileStorage::READ);
+        fs[fichero.c_str()] >> vocabulary;
+        fs.release();
+
+    Classifier svm_class;
+    BOWImgDescriptorExtractor bowide();
+    //bowide().setVocabulary(vocabulary);
+
+
+}
