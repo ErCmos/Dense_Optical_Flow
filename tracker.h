@@ -99,13 +99,6 @@ typedef struct {
     float* desc;
 }DescMat;
 
-enum clases{
-    boxing,
-    running,
-    test_sequences,
-    NumberOfTypes
-};
-
 class Tracker
 {
 public:

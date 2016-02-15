@@ -238,7 +238,7 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
     std::string file;
     string action;
     int dictionarySize=0;   //máximo el número de descriptores (filas)
-    Mat featuresUnclustered;
+    Mat featuresUnclustered,LabelsUnclustered;
 
     if(dirName.find_last_of("/") != std::string::npos)
             action = dirName.substr(dirName.find_last_of("/")+1);
@@ -288,6 +288,18 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
 
                 /*////////////////////////////////////////////////////*/
                     float Data[number_of_lines][number_of_colums];
+                    float Labels[number_of_lines];
+
+                    std::map<float, std::string> actions;
+
+                    // Initialize the map
+                    actions.insert(std::make_pair(1, "boxing"));
+                    actions.insert(std::make_pair(2, "handclapping"));
+                    actions.insert(std::make_pair(3, "handwaving"));
+                    actions.insert(std::make_pair(4, "jogging"));
+                    actions.insert(std::make_pair(5, "running"));
+                    actions.insert(std::make_pair(6, "walking"));
+                    actions.insert(std::make_pair(7, "test_sequences"));
 
                     int rows=0;
                     int cols=0;
@@ -303,6 +315,26 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                           //printf ("%s\n",pch);
                           float value=atof(pch);
                           Data[rows][cols]=value;
+
+                          // Use the map
+                          std::map<float, std::string>::iterator it = actions.begin();
+                             while(it != actions.end())
+                             {
+                                 if (it->second == action)
+                                     Labels[rows]=it->first;
+                                 it++;
+                             }
+            /*
+                          std::map<int, std::string>::const_iterator iter=actions.find();
+                              //actions.find(num);
+                          while (iter != actions.end())
+                          {
+                              // iter->second contains your string
+                              // iter->first contains the number you just looked up
+                              if (iter->second == action)
+                                    Labels[rows]=iter->first;
+                          }
+*/
                           printf("%f",value);
                           pch = strtok (NULL, "\t");
                           ++cols;
@@ -329,8 +361,10 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                     //Mat descriptor;
                     //To store all the descriptors that are extracted from all the images.
 //                    Mat featuresUnclustered;
+                    //actions.count();
                     Mat descriptor(number_of_lines,number_of_colums,CV_32FC1,Data);
-
+                    float number_of_clases=(float) actions.size();
+                    Mat MatLabels(number_of_lines,number_of_clases,CV_32FC1,Labels);
 
                     //The SIFT feature extractor and descriptor
                     //SiftDescriptorExtractor detector;
@@ -358,6 +392,7 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                 //               detector->compute(input, keypoints,descriptor);
                                //put the all feature descriptors in a single Mat object
                                featuresUnclustered.push_back(descriptor);
+                               LabelsUnclustered.push_back(MatLabels);
                                dictionarySize=dictionarySize+number_of_lines;
                                //print the percentage
                                //printf("%i percent done\n",f/10);
@@ -368,8 +403,10 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
         }
     }
     Mat descr;
+    Mat labels;
     //featuresUnclustered.convertTo(descr, CV_32F);
     featuresUnclustered.convertTo(descr, CV_32FC1);
+    LabelsUnclustered.convertTo(labels, CV_32FC1);
     //Construct BOWKMeansTrainer
     //the number of bags
     //int dictionarySize=200;
@@ -386,11 +423,18 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
     //bowTrainer.add(featuresUnclustered);
     //cluster the feature vectors
     Mat dictionary=bowTrainer.cluster(featuresUnclustered);
+    Mat dictionary_labels=bowTrainer.cluster(LabelsUnclustered);
     //Mat dictionary=bowTrainer.cluster();
     //store the vocabulary
     //FileStorage fs("diccionario.yml", FileStorage::WRITE);
     FileStorage fs(dirName+"/"+action+".yml", FileStorage::WRITE);
     fs << action.c_str() << dictionary;
     fs.release();
+    FileStorage fs2(dirName+"/"+action+"_Labels.yml", FileStorage::WRITE);
+    fs2 << action.c_str() << dictionary_labels;
+    fs2.release();
+
+    Classifier SVM;
+    SVM.svm(featuresUnclustered,LabelsUnclustered,featuresUnclustered,LabelsUnclustered);
 }
 ////////////////////////////////////////////////
