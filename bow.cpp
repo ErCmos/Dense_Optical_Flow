@@ -381,14 +381,8 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
 
                     featuresUnclustered.push_back(descriptor);
                     LabelsUnclustered.push_back(MatLabels);
-                    descriptorSVM=descriptor_TMP_SVM;
-                    MatLabelsSVM=MatLabels_TMP_SVM;
-
-                    Classifier SVM;
-                    //SVM.svm(featuresUnclustered,LabelsUnclustered,featuresUnclustered,LabelsUnclustered);
-                    //SVM.svm(descriptorSVM,MatLabelsSVM,trainingDataMat,etiquetasMat);
-                    //SVM.svm(trainingDataMat,etiquetasMat,descriptorSVM,MatLabelsSVM);
-                    SVM.svm(trainingDataMat,etiquetasMat,descriptor_TMP_SVM,MatLabels_TMP_SVM);
+                    descriptorSVM=descriptor_TMP_SVM.clone();
+                    MatLabelsSVM=MatLabels_TMP_SVM.clone();
                 }
             }
         }
