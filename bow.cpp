@@ -235,6 +235,29 @@ void BoW::TageadorDiccionario(std::string dirName, std::string fileName)
 void BoW::CrearDiccionarioDirectorio(std::string dirName)
 //void BoW::CrearDiccionario(string descriptor)
 {
+    //float trainingData[4][2]= { {501, 10}, {255, 10}, {501, 255}, {10, 501} };
+    float trainingData[4][2], x, y;
+    x=501;y=10;
+    trainingData[0][0] = x;
+    trainingData[0][1] = y;
+    x=255;y=10;
+    trainingData[1][0] = x;
+    trainingData[1][1] = y;
+    x=501;y=255;
+    trainingData[2][0] = x;
+    trainingData[2][1] = y;
+    x=10;y=501;
+    trainingData[3][0] = x;
+    trainingData[3][1] = y;
+
+    Mat trainingDataMat(4, 2, CV_32FC1, trainingData);
+
+    // Set up training data
+    float etiquetas[4] = {1.0, -1.0, -1.0, -1.0};
+    Mat etiquetasMat(4, 1, CV_32FC1, etiquetas);
+    Mat descriptorSVM,MatLabelsSVM;
+
+
     std::string file;
     string action;
     int dictionarySize=0;   //máximo el número de descriptores (filas)
@@ -276,7 +299,6 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                       number_of_colums++;
                       pch = strtok (NULL, "\t");
                     }
-
                     free(pch);
                     rewind(fp); //rewind the file to count the lines
                     do
@@ -287,8 +309,14 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                     } while (ch != EOF);
 
                 /*////////////////////////////////////////////////////*/
-                    float Data[number_of_lines][number_of_colums];
-                    float Labels[number_of_lines];
+                    //QVector<float> Labels;
+                    std::vector<float> Labels;
+                    Labels.reserve(number_of_lines);
+                    std::vector< std::vector<float> > DatatoTrain;
+                    float lab[number_of_lines];
+
+                    Mat MatLabels_TMP_SVM(number_of_lines,1,CV_32FC1);
+                    Mat descriptor_TMP_SVM(number_of_lines,number_of_colums,CV_32FC1);
 
                     std::map<float, std::string> actions;
 
@@ -310,98 +338,69 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                         //Extract parts separated by "\t"
                         char * pch;
                         pch = strtok (line,"\t");
+                        std::vector<float> fila;
                         while (pch != NULL)
                         {
                           //printf ("%s\n",pch);
                           float value=atof(pch);
-                          Data[rows][cols]=value;
-
-                          // Use the map
-                          std::map<float, std::string>::iterator it = actions.begin();
-                             while(it != actions.end())
-                             {
-                                 if (it->second == action)
-                                     Labels[rows]=it->first;
-                                 it++;
-                             }
-            /*
-                          std::map<int, std::string>::const_iterator iter=actions.find();
-                              //actions.find(num);
-                          while (iter != actions.end())
-                          {
-                              // iter->second contains your string
-                              // iter->first contains the number you just looked up
-                              if (iter->second == action)
-                                    Labels[rows]=iter->first;
-                          }
-*/
-                          printf("%f",value);
+                          fila.push_back(value);
+                          descriptor_TMP_SVM.at<float>(rows,cols)=value;
                           pch = strtok (NULL, "\t");
                           ++cols;
                         }
-                        ++rows;
-                        cols=1;
+
+                        DatatoTrain.push_back(fila);
                         free(pch);
+                        // Use the map
+                        std::map<float, std::string>::iterator it = actions.begin();
+                           while(it != actions.end())
+                           {
+                               if (it->second == action)
+                               {
+                                  Labels.push_back(it->first);
+                                  lab[rows]=etiquetas[rows];
+                                  MatLabels_TMP_SVM.at<float>(rows,0)=etiquetas[rows];
+                               }
+                               it++;
+                           }
+                        //pch = strtok (NULL, "\t");
+                        //++cols;
+                        ++rows;
+                        cols=0;
                     }
 
                     fclose(fp);
                     if (line)
                         free(line);
 
-                    //Step 1 - Obtain the set of bags of features.
+                    Mat descriptor(number_of_lines,number_of_colums,CV_32FC1,DatatoTrain.data());
+                    Mat MatLabels(number_of_lines,1,CV_32FC1,&lab);
 
-                    //to store the input file names
-                    //char * filename = new char[100];
-                    //to store the current input image
-                //    Mat input;
+                    //Mat descriptor(number_of_lines,number_of_colums,CV_32FC1,&DatatoTrain[0][0]);
+                    //Mat MatLabels(number_of_lines,1,CV_32FC1,Labels.data());
 
-                    //To store the keypoints that will be extracted by SIFT
-                //    vector<KeyPoint> keypoints;
-                    //To store the SIFT descriptor of current image
-                    //Mat descriptor;
-                    //To store all the descriptors that are extracted from all the images.
-//                    Mat featuresUnclustered;
-                    //actions.count();
-                    Mat descriptor(number_of_lines,number_of_colums,CV_32FC1,Data);
-                    float number_of_clases=(float) actions.size();
-                    Mat MatLabels(number_of_lines,number_of_clases,CV_32FC1,Labels);
+                    featuresUnclustered.push_back(descriptor);
+                    LabelsUnclustered.push_back(MatLabels);
+                    descriptorSVM=descriptor_TMP_SVM;
+                    MatLabelsSVM=MatLabels_TMP_SVM;
 
-                    //The SIFT feature extractor and descriptor
-                    //SiftDescriptorExtractor detector;
-                //    Ptr<SIFT> detector = SIFT::create();
-
-                    //QString directorio = QString::fromStdString(dirName);
-                    //QDir dir(directorio);
-                //    QDir dir(QString::fromStdString(dirName));
-                    //QMessageBox msgBox;
-                //    foreach(QFileInfo item, dir.entryInfoList() )
-                //        {
-                //            if(item.isFile())
-                //           {
-                               // msgBox.setText(item.absoluteFilePath());
-                               // msgBox.exec();
-                               //create the file name of an image
-                               //sprintf(filename,"G:\\testimages\\image\\%i.jpg",f);
-                               //open the file
-                //               input = imread(item.absoluteFilePath().toStdString(), CV_LOAD_IMAGE_GRAYSCALE); //Load as grayscale
-                               //detect feature points
-                               //detector.detect(input, keypoints);
-                //               detector->detect( input, keypoints );
-                               //compute the descriptors for each keypoint
-                               //detector.compute(input, keypoints,descriptor);
-                //               detector->compute(input, keypoints,descriptor);
-                               //put the all feature descriptors in a single Mat object
-                               featuresUnclustered.push_back(descriptor);
-                               LabelsUnclustered.push_back(MatLabels);
-                               dictionarySize=dictionarySize+number_of_lines;
-                               //print the percentage
-                               //printf("%i percent done\n",f/10);
-                //            }
-                //        }
+                    Classifier SVM;
+                    //SVM.svm(featuresUnclustered,LabelsUnclustered,featuresUnclustered,LabelsUnclustered);
+                    //SVM.svm(descriptorSVM,MatLabelsSVM,trainingDataMat,etiquetasMat);
+                    //SVM.svm(trainingDataMat,etiquetasMat,descriptorSVM,MatLabelsSVM);
+                    SVM.svm(trainingDataMat,etiquetasMat,descriptor_TMP_SVM,MatLabels_TMP_SVM);
                 }
             }
         }
     }
+
+
+    Classifier SVM;
+    //SVM.svm(featuresUnclustered,LabelsUnclustered,featuresUnclustered,LabelsUnclustered);
+    //SVM.svm(descriptorSVM,MatLabelsSVM,trainingDataMat,etiquetasMat);
+    //SVM.svm(trainingDataMat,etiquetasMat,descriptorSVM,MatLabelsSVM);
+    SVM.svm(trainingDataMat,etiquetasMat,descriptorSVM,MatLabelsSVM);
+
     Mat descr;
     Mat labels;
     //featuresUnclustered.convertTo(descr, CV_32F);
@@ -434,7 +433,7 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
     fs2 << action.c_str() << dictionary_labels;
     fs2.release();
 
-    Classifier SVM;
-    SVM.svm(featuresUnclustered,LabelsUnclustered,featuresUnclustered,LabelsUnclustered);
+
+
 }
 ////////////////////////////////////////////////

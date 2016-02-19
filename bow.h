@@ -13,6 +13,7 @@
 #include "opencv2/xfeatures2d.hpp"
 #include "dirent.h"
 #include "classifier.h"
+#include "QVector"
 
 /**
  * @brief The BoW class Clase para definir un Bag of Words
