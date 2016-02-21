@@ -233,8 +233,8 @@ void BoW::TageadorDiccionario(std::string dirName, std::string fileName)
 
 //////////////// CrearDiccionariodeDirectorio ///////////////////
 void BoW::CrearDiccionarioDirectorio(std::string dirName)
-//void BoW::CrearDiccionario(string descriptor)
 {
+/*
     //float trainingData[4][2]= { {501, 10}, {255, 10}, {501, 255}, {10, 501} };
     float trainingData[4][2], x, y;
     x=501;y=10;
@@ -255,13 +255,12 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
     // Set up training data
     float etiquetas[4] = {1.0, -1.0, -1.0, -1.0};
     Mat etiquetasMat(4, 1, CV_32FC1, etiquetas);
-    Mat descriptorSVM,MatLabelsSVM;
 
+*/
+    Mat MatDescriptorSVM,MatLabelsSVM,featuresUnclustered,LabelsUnclustered;
 
     std::string file;
     string action;
-    int dictionarySize=0;   //máximo el número de descriptores (filas)
-    Mat featuresUnclustered,LabelsUnclustered;
 
     if(dirName.find_last_of("/") != std::string::npos)
             action = dirName.substr(dirName.find_last_of("/")+1);
@@ -309,14 +308,8 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                     } while (ch != EOF);
 
                 /*////////////////////////////////////////////////////*/
-                    //QVector<float> Labels;
-                    std::vector<float> Labels;
-                    Labels.reserve(number_of_lines);
-                    std::vector< std::vector<float> > DatatoTrain;
-                    float lab[number_of_lines];
-
                     Mat MatLabels_TMP_SVM(number_of_lines,1,CV_32FC1);
-                    Mat descriptor_TMP_SVM(number_of_lines,number_of_colums,CV_32FC1);
+                    Mat MatDescriptor_TMP_SVM(number_of_lines,number_of_colums,CV_32FC1);
 
                     std::map<float, std::string> actions;
 
@@ -338,18 +331,15 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                         //Extract parts separated by "\t"
                         char * pch;
                         pch = strtok (line,"\t");
-                        std::vector<float> fila;
                         while (pch != NULL)
                         {
                           //printf ("%s\n",pch);
                           float value=atof(pch);
-                          fila.push_back(value);
-                          descriptor_TMP_SVM.at<float>(rows,cols)=value;
+                          MatDescriptor_TMP_SVM.at<float>(rows,cols)=value;
                           pch = strtok (NULL, "\t");
                           ++cols;
                         }
 
-                        DatatoTrain.push_back(fila);
                         free(pch);
                         // Use the map
                         std::map<float, std::string>::iterator it = actions.begin();
@@ -357,14 +347,10 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                            {
                                if (it->second == action)
                                {
-                                  Labels.push_back(it->first);
-                                  lab[rows]=etiquetas[rows];
-                                  MatLabels_TMP_SVM.at<float>(rows,0)=etiquetas[rows];
+                                  MatLabels_TMP_SVM.at<float>(rows,0)=it->first;
                                }
                                it++;
                            }
-                        //pch = strtok (NULL, "\t");
-                        //++cols;
                         ++rows;
                         cols=0;
                     }
@@ -373,37 +359,35 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                     if (line)
                         free(line);
 
-                    Mat descriptor(number_of_lines,number_of_colums,CV_32FC1,DatatoTrain.data());
-                    Mat MatLabels(number_of_lines,1,CV_32FC1,&lab);
+                    featuresUnclustered.push_back(MatDescriptor_TMP_SVM);
+                    LabelsUnclustered.push_back(MatLabels_TMP_SVM);
 
-                    //Mat descriptor(number_of_lines,number_of_colums,CV_32FC1,&DatatoTrain[0][0]);
-                    //Mat MatLabels(number_of_lines,1,CV_32FC1,Labels.data());
-
-                    featuresUnclustered.push_back(descriptor);
-                    LabelsUnclustered.push_back(MatLabels);
-                    descriptorSVM=descriptor_TMP_SVM.clone();
-                    MatLabelsSVM=MatLabels_TMP_SVM.clone();
+//                    MatDescriptorSVM=MatDescriptor_TMP_SVM.clone();
+//                    MatLabelsSVM=MatLabels_TMP_SVM.clone();
                 }
             }
         }
     }
 
-
+/*//////////////////////////////////////////////
     Classifier SVM;
     //SVM.svm(featuresUnclustered,LabelsUnclustered,featuresUnclustered,LabelsUnclustered);
     //SVM.svm(descriptorSVM,MatLabelsSVM,trainingDataMat,etiquetasMat);
     //SVM.svm(trainingDataMat,etiquetasMat,descriptorSVM,MatLabelsSVM);
-    SVM.svm(trainingDataMat,etiquetasMat,descriptorSVM,MatLabelsSVM);
+    SVM.svm(trainingDataMat,etiquetasMat,MatDescriptorSVM,MatLabelsSVM);
+***********/
 
-    Mat descr;
+//Just in case featuresUnclustered not defined as <float>
+    Mat descriptor;
     Mat labels;
-    //featuresUnclustered.convertTo(descr, CV_32F);
-    featuresUnclustered.convertTo(descr, CV_32FC1);
+
+    featuresUnclustered.convertTo(descriptor, CV_32FC1);
     LabelsUnclustered.convertTo(labels, CV_32FC1);
+/*///////////////////////////////////////////////////////////*/
+
     //Construct BOWKMeansTrainer
     //the number of bags
-    //int dictionarySize=200;
-    //int dictionarySize=number_of_lines;   //máximo el número de descriptores (filas)
+    int dictionarySize=10;
     //define Term Criteria
     TermCriteria tc(CV_TERMCRIT_ITER,100,0.001);
     //retries number
@@ -413,7 +397,7 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
     //Create the BoW (or BoF) trainer
     BOWKMeansTrainer bowTrainer(dictionarySize,tc,retries,flags);
     //BOWKMeansTrainer bowTrainer(dictionarySize);
-    //bowTrainer.add(featuresUnclustered);
+    bowTrainer.add(featuresUnclustered);
     //cluster the feature vectors
     Mat dictionary=bowTrainer.cluster(featuresUnclustered);
     Mat dictionary_labels=bowTrainer.cluster(LabelsUnclustered);
@@ -421,13 +405,75 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
     //store the vocabulary
     //FileStorage fs("diccionario.yml", FileStorage::WRITE);
     FileStorage fs(dirName+"/"+action+".yml", FileStorage::WRITE);
+    //fs << action.c_str() << featuresUnclustered;
     fs << action.c_str() << dictionary;
     fs.release();
     FileStorage fs2(dirName+"/"+action+"_Labels.yml", FileStorage::WRITE);
+    //fs2 << action.c_str() << LabelsUnclustered;
     fs2 << action.c_str() << dictionary_labels;
     fs2.release();
+}
+////////////////////////////////////////////////
 
+//////////////// CrearDiccionariodeDirectorio ///////////////////
+void BoW::CrearDiccionarioAcciones(std::string dirName)
+{
+    std::string file;
+    string action;
+    Mat TrainingData,TrainingLabels;
 
+    std::map<float, std::string> actions;
 
+    // Initialize the map
+    actions.insert(std::make_pair(1, "boxing"));
+    actions.insert(std::make_pair(2, "handclapping"));
+    actions.insert(std::make_pair(3, "handwaving"));
+    actions.insert(std::make_pair(4, "jogging"));
+    actions.insert(std::make_pair(5, "running"));
+    actions.insert(std::make_pair(6, "walking"));
+    actions.insert(std::make_pair(7, "test_sequences"));
+
+    DIR *pDIR;
+    struct dirent *entry;
+    if(pDIR=opendir(dirName.c_str()))
+    {
+        while(entry=readdir((pDIR)))
+        {
+            if(strcmp(entry->d_name,".") != 0 && strcmp(entry->d_name,".."))
+            {
+                string Name=entry->d_name;
+                if(Name.substr(Name.find_first_of(".")+1) == "yml")
+                {
+                    file=dirName+"/"+Name;
+                    action=Name.substr(0,Name.find_first_of("."));
+                    Mat vocabulary, vocabulary_f;
+                    FileStorage fs(file.c_str(), FileStorage::READ);
+                        fs[action.c_str()] >> vocabulary;
+                        vocabulary.convertTo(vocabulary_f, CV_32FC1);
+                        fs.release();
+
+                    Mat labels(vocabulary.rows,1,CV_32FC1);
+                    int i=0;
+                    while (i<=vocabulary.rows)
+                    {
+                        std::map<float, std::string>::iterator it = actions.begin();
+                           while(it != actions.end())
+                           {
+                               if (it->second == action)
+                               {
+                                  labels.at<float>(i,0)=it->first;
+                               }
+                               it++;
+                           }
+                        i++;
+                    }
+                    TrainingData.push_back(vocabulary_f);
+                    TrainingLabels.push_back(labels);
+                }
+            }
+        }
+    }
+    Classifier SVM;
+    SVM.svm(TrainingData,TrainingLabels,TrainingData,TrainingLabels);
 }
 ////////////////////////////////////////////////

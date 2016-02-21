@@ -30,6 +30,7 @@ public:
     //////////////// CrearDiccionario ///////////////////
     void CrearDiccionario(std::string file, std::string dir);
     void CrearDiccionarioDirectorio(std::string dir);
+    void CrearDiccionarioAcciones(std::string dir);
     //void CrearDiccionario(std::string descriptor);
     ////////////////////////////////////////////////
 

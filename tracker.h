@@ -8,33 +8,6 @@
 #include <unistd.h>
 
 using namespace cv;
-/*
-namespace constantes
-{
-static int start_frame = 0;
-static int end_frame = INT_MAX;
-static int scale_num = 8;
-static const float scale_stride = sqrt(2);
-
-// parameters for descriptors
-static int patch_size = 32;
-static int nxy_cell = 2;
-static int nt_cell = 3;
-static float epsilon = 0.05;
-static const float min_flow = 0.4;
-
-// parameters for tracking
-static double quality = 0.001;
-static int min_distance = 5;
-static int init_gap = 1;
-static int track_length = 15;
-
-// parameters for rejecting trajectory
-static const float min_var = sqrt(3);
-static const float max_var = 50;
-static const float max_dis = 20;
-}
-*/
 
 namespace constantes
 {

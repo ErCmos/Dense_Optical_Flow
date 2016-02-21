@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     initialize.cpp \
     opticalflow.cpp \
     classifier.cpp \
-    bow.cpp
+    bow.cpp \
+    ofde.cpp
 
 HEADERS  += mainwindow.h \
     video_player.h \
@@ -33,6 +34,7 @@ HEADERS  += mainwindow.h \
     opticalflow.h \
     tracker.h \
     classifier.h \
-    bow.h
+    bow.h \
+    ofde.h
 
 FORMS    += mainwindow.ui

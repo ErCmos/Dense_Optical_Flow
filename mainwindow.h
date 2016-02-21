@@ -6,7 +6,11 @@
 #include <video_player.h>
 #include <densetrack.h>
 #include "classifier.h"
-//#include <tracker.h>
+#include "bow.h"
+#include "descriptors.h"
+//#include <opencv2/features2d.hpp>
+//#include "opencv2/xfeatures2d.hpp"
+#include "ofde.h"
 
 #include <QMessageBox>
 #include <opencv/cv.h>

@@ -39,21 +39,16 @@ void Classifier::svm(cv::Mat& trainingData, cv::Mat& trainingClasses, cv::Mat& t
     param.term_crit.max_iter = 1000;
     param.term_crit.epsilon = 1e-6;
 
-
     // Set up SVM's parameters
     CvSVMParams params;
     params.svm_type    = CvSVM::C_SVC;
     params.kernel_type = CvSVM::LINEAR;
     params.term_crit   = cvTermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
 
-
-
-
-
-
     // SVM training (use train auto for OpenCV>=2.0)
-    CvSVM svm(trainingData, trainingClasses, cv::Mat(), cv::Mat(), param);
-    CvSVM svm2(testData, testClasses, cv::Mat(), cv::Mat(), param);
+    CvSVM svm(trainingData, trainingClasses, cv::Mat(), cv::Mat(), params);
+//    cout << "data=" << trainingClasses.data << endl;
+    CvSVM svm2(testData, testClasses, cv::Mat(), cv::Mat(), params);
 
     cv::Mat predicted(testClasses.rows, 1, CV_32F);
 

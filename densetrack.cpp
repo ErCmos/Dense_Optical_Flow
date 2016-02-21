@@ -18,11 +18,7 @@ DenseTrack::~DenseTrack()
 using namespace cv;
 using namespace constantes;
 
-//extern int scale_num;
-//int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, int FrameInicio, int FrameFinal)
-//int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, int start_frame, int end_frame, int track_length, int min_distance, int patch_size, int nxy_cell, int nt_cell, int scale_num, int init_gap)
 int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, int start_frame, int end_frame, int track_length, int min_distance, int patch_size, int nxy_cell, int nt_cell, int scale_num, int init_gap)
-//int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros)
 {
     char *video = new char[fileName.length() + 1];
     strcpy(video, fileName.c_str());
@@ -196,7 +192,8 @@ int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, 
                         if(IsValid(trajectory, mean_x, mean_y, var_x, var_y, length))
                         {
                                 FILE *stream ;
-                                   if((stream = freopen("/home/ercmos/Videos/test_sequences/prueba2.txt", "a+", stdout)) == NULL)
+                                string salida=fileName.substr(0,fileName.find_last_of("."))+".txt";
+                                   if((stream = freopen(salida.c_str(), "a+", stdout)) == NULL)
                                       exit(-1);
 
                                 //   freopen( "stdin.log", "w", stdin );

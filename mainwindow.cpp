@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+using namespace cv::xfeatures2d;
+
 //#include "opencv2/videoio.hpp"
 //#include "opencv2/features2d.hpp"
 //#include "opencv2/xfeatures2d.hpp"
@@ -128,23 +130,75 @@ void MainWindow::on_TrainSVMButton_clicked()
     QString fullName = QFileDialog::getOpenFileName(this,
             tr("Open Diccionary"), "/home/ercmos", tr("Diccionary Files (*.yml)"));
 
-    //QString dirName = QFileInfo(fullName).absolutePath();
+    QString dirName = QFileInfo(fullName).absolutePath();
     QString fileName = QFileInfo(fullName).fileName();
     string extension;
     string fichero;
+
+    BoW saco;
+    saco.CrearDiccionarioAcciones(dirName.toStdString());
 
     if(fileName.toStdString().find_last_of(".") != std::string::npos)
             extension = fileName.toStdString().substr(fileName.toStdString().find_last_of(".")+1);
             fichero = fileName.toStdString().substr(0,fileName.toStdString().find_last_of("."));
 
-    Mat vocabulary;
+    Mat vocabulary, vocabulary_f;
     FileStorage fs(fullName.toStdString().c_str(), FileStorage::READ);
         fs[fichero.c_str()] >> vocabulary;
+        vocabulary.convertTo(vocabulary_f, CV_32FC1);
         fs.release();
 
+    Mat label,label_f;
+    //QString dirName = QFileInfo(fullName).absolutePath();
+    string labelfile=dirName.toStdString()+"/"+fichero.c_str()+"_Labels."+extension;
+    FileStorage fs2(labelfile, FileStorage::READ);
+        fs2[fichero.c_str()] >> label;
+        label.convertTo(label_f, CV_32FC1);
+        fs2.release();
+/*
+    float trainingData[4][2]= { {501, 10}, {255, 10}, {501, 255}, {10, 501} };
+    Mat trainingDataMat(4, 2, CV_32FC1, trainingData);
+
+        // Set up training data
+    float etiquetas[4] = {1.0, -1.0, -1.0, -1.0};
+    Mat etiquetasMat(4, 1, CV_32FC1, etiquetas);
+
+    Mat voc(trainingDataMat.rows,trainingDataMat.cols,CV_32FC1),lab(etiquetasMat.rows,etiquetasMat.cols,CV_32FC1);
+
+    voc.at<float>(0,0)=501; voc.at<float>(0,1)=10;
+    voc.at<float>(1,0)=255; voc.at<float>(1,1)=10;
+    voc.at<float>(2,0)=501; voc.at<float>(2,1)=255;
+    voc.at<float>(3,0)=10; voc.at<float>(3,1)=501;
+
+    lab.at<float>(0)=1.0;
+    lab.at<float>(1)=-1.0;
+    lab.at<float>(2)=-1.0;
+    lab.at<float>(3)=-1.0;
+
     Classifier svm_class;
-    BOWImgDescriptorExtractor bowide();
+    //voc.refcount=0;
+    //lab.refcount=0;
+    std::cout << std::endl << "vocabulary=" << vocabulary << std::endl;
+    std::cout << std::endl << "voc=" << voc << std::endl;
+    std::cout << std::endl << "vocabulary_f=" << vocabulary_f << std::endl;
+
+    cv::Mat diff = trainingDataMat != vocabulary_f;
+    std::cout << std::endl << "diff=" << diff << std::endl;
+    cv::compare(etiquetasMat, label_f, diff, cv::CMP_NE);
+    std::cout << std::endl << "compare=" << diff << std::endl;
+*/
+    Classifier svm_class;
+    svm_class.svm(vocabulary_f,label_f,vocabulary,label);
+//    Track kk;
+    //Ptr<DescriptorExtractor> extractor = OFDE::create("ofde");
+    //Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("FlannBased");
+    Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("SURF");
+    Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("FlannBased");
+    //Ptr<DescriptorExtractor> extractor(new Track);
+    //create Sift descriptor extractor
+    //Ptr<DescriptorExtractor> extractor(new SiftDescriptorExtractor);
+//    Ptr<Track> extractor(new Track);
+    BOWImgDescriptorExtractor bowide(extractor,matcher);
+    bowide.setVocabulary(vocabulary);
     //bowide().setVocabulary(vocabulary);
-
-
 }
