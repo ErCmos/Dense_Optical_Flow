@@ -234,30 +234,7 @@ void BoW::TageadorDiccionario(std::string dirName, std::string fileName)
 //////////////// CrearDiccionariodeDirectorio ///////////////////
 void BoW::CrearDiccionarioDirectorio(std::string dirName)
 {
-/*
-    //float trainingData[4][2]= { {501, 10}, {255, 10}, {501, 255}, {10, 501} };
-    float trainingData[4][2], x, y;
-    x=501;y=10;
-    trainingData[0][0] = x;
-    trainingData[0][1] = y;
-    x=255;y=10;
-    trainingData[1][0] = x;
-    trainingData[1][1] = y;
-    x=501;y=255;
-    trainingData[2][0] = x;
-    trainingData[2][1] = y;
-    x=10;y=501;
-    trainingData[3][0] = x;
-    trainingData[3][1] = y;
-
-    Mat trainingDataMat(4, 2, CV_32FC1, trainingData);
-
-    // Set up training data
-    float etiquetas[4] = {1.0, -1.0, -1.0, -1.0};
-    Mat etiquetasMat(4, 1, CV_32FC1, etiquetas);
-
-*/
-    Mat MatDescriptorSVM,MatLabelsSVM,featuresUnclustered,LabelsUnclustered;
+    Mat featuresUnclustered,LabelsUnclustered;
 
     std::string file;
     string action;
@@ -361,21 +338,10 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
 
                     featuresUnclustered.push_back(MatDescriptor_TMP_SVM);
                     LabelsUnclustered.push_back(MatLabels_TMP_SVM);
-
-//                    MatDescriptorSVM=MatDescriptor_TMP_SVM.clone();
-//                    MatLabelsSVM=MatLabels_TMP_SVM.clone();
                 }
             }
         }
     }
-
-/*//////////////////////////////////////////////
-    Classifier SVM;
-    //SVM.svm(featuresUnclustered,LabelsUnclustered,featuresUnclustered,LabelsUnclustered);
-    //SVM.svm(descriptorSVM,MatLabelsSVM,trainingDataMat,etiquetasMat);
-    //SVM.svm(trainingDataMat,etiquetasMat,descriptorSVM,MatLabelsSVM);
-    SVM.svm(trainingDataMat,etiquetasMat,MatDescriptorSVM,MatLabelsSVM);
-***********/
 
 //Just in case featuresUnclustered not defined as <float>
     Mat descriptor;
@@ -384,7 +350,12 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
     featuresUnclustered.convertTo(descriptor, CV_32FC1);
     LabelsUnclustered.convertTo(labels, CV_32FC1);
 /*///////////////////////////////////////////////////////////*/
+    FileStorage fs(dirName+"/"+action+".yml", FileStorage::WRITE);
+    //fs << action.c_str() << featuresUnclustered;
+    fs << action.c_str() << descriptor;
+    fs.release();
 
+/*  En caso de querer hacer el cluster aquí
     //Construct BOWKMeansTrainer
     //the number of bags
     int dictionarySize=10;
@@ -412,6 +383,7 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
     //fs2 << action.c_str() << LabelsUnclustered;
     fs2 << action.c_str() << dictionary_labels;
     fs2.release();
+*/
 }
 ////////////////////////////////////////////////
 
@@ -473,7 +445,77 @@ void BoW::CrearDiccionarioAcciones(std::string dirName)
             }
         }
     }
+
+    Mat DataLabeled;
+    hconcat(TrainingData,TrainingLabels,DataLabeled);
+    //concat data with labels to avoid unmach them
+
+    //Construct BOWKMeansTrainer
+    //the number of bags
+    int dictionarySize=10;
+    //define Term Criteria
+    TermCriteria tc(CV_TERMCRIT_ITER,100,0.001);
+    //retries number
+    int retries=1;
+    //necessary flags
+    int flags=KMEANS_PP_CENTERS;
+    //Create the BoW (or BoF) trainer
+    BOWKMeansTrainer bowTrainer(dictionarySize,tc,retries,flags);
+    //BOWKMeansTrainer bowTrainer(dictionarySize);
+//    bowTrainer.add(TrainingData);
+    //cluster the feature vectors
+//    Mat dictionary=bowTrainer.cluster(TrainingData);
+//    Mat dictionary_labels=bowTrainer.cluster(TrainingLabels);
+    Mat LabeledDictionary=bowTrainer.cluster(DataLabeled);
+    //Mat dictionary=bowTrainer.cluster();
+    //store the vocabulary
+    //FileStorage fs("diccionario.yml", FileStorage::WRITE);
+//    FileStorage fs(dirName+"/"+"Actions_Clustered.yml", FileStorage::WRITE);
+    FileStorage fs(dirName+"/"+"LabeledActions_Clustered.yml", FileStorage::WRITE);
+    //fs << action.c_str() << featuresUnclustered;
+    //fs << "Actions" << dictionary;
+    fs << "LabeledActions" << LabeledDictionary;
+    fs.release();
+/*
+    FileStorage fs2(dirName+"/"+"Labels_Clustered.yml", FileStorage::WRITE);
+    //fs2 << action.c_str() << LabelsUnclustered;
+    //fs2 << "Labels" << dictionary_labels;
+    fs2 << "Labels" << TrainingLabels;
+    fs2.release();
+
+    Mat result;
+    hconcat(TrainingData,TrainingLabels,result);
+    FileStorage fs3(dirName+"/"+"Concat.yml", FileStorage::WRITE);
+    //fs2 << action.c_str() << LabelsUnclustered;
+    //fs2 << "Labels" << dictionary_labels;
+    fs3 << "Concat" << result;
+    fs3.release();
+    Mat Ndata(result.rows,result.cols-1,CV_32FC1),Nlabe(result.rows,1,CV_32FC1);
+    Nlabe=result.colRange(result.cols-1,result.cols);
+    Ndata=result.colRange(0,result.cols-1);
+
+    FileStorage fs4(dirName+"/"+"NewData.yml", FileStorage::WRITE);
+    //fs << action.c_str() << featuresUnclustered;
+    //fs << "Actions" << dictionary;
+    fs4 << "Actions" << Ndata;
+    fs4.release();
+    FileStorage fs5(dirName+"/"+"NewLabels.yml", FileStorage::WRITE);
+    //fs2 << action.c_str() << LabelsUnclustered;
+    //fs2 << "Labels" << dictionary_labels;
+    fs5 << "Labels" << Nlabe;
+    fs5.release();
+*/
+
+    Mat LabeledActions,LabeledActions_f;
+    FileStorage fs2(dirName+"/"+"LabeledActions_Clustered.yml", FileStorage::READ);
+        fs2["LabeledActions"] >> LabeledActions;
+        LabeledActions.convertTo(LabeledActions_f, CV_32FC1);
+        fs2.release();
+
+    Mat Cdata(LabeledActions_f.rows,LabeledActions_f.cols-1,CV_32FC1), Clabes(LabeledActions_f.rows,1,CV_32FC1);
+    Clabes=LabeledActions_f.colRange(LabeledActions_f.cols-1,LabeledActions_f.cols);
+    Cdata=LabeledActions_f.colRange(0,LabeledActions_f.cols-1);
     Classifier SVM;
-    SVM.svm(TrainingData,TrainingLabels,TrainingData,TrainingLabels);
+    SVM.svm(Cdata,Clabes,Cdata,Clabes);
 }
 ////////////////////////////////////////////////
