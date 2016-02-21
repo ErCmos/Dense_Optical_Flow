@@ -46,6 +46,8 @@ private slots:
 
     void on_TrainSVMButton_clicked();
 
+    void on_TestFileButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

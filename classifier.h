@@ -10,7 +10,9 @@ class Classifier
 public:
     Classifier();
     ~Classifier();
-    void svm(cv::Mat& trainingData, cv::Mat& trainingClasses, cv::Mat& testData, cv::Mat& testClasses);
+    //void svm(cv::Mat& trainingData, cv::Mat& trainingClasses, cv::Mat& testData, cv::Mat& testClasses);
+    void svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses,std::string fileName);
+    void svm_test(cv::Mat& testData, cv::Mat& testClasses, std::string fileName);
 private:
     float evaluate(cv::Mat& predicted, cv::Mat& actual);
     void plot_binary(cv::Mat& data, cv::Mat& classes, std::string name);

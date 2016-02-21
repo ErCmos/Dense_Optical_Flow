@@ -7,302 +7,279 @@
     <x>0</x>
     <y>0</y>
     <width>559</width>
-    <height>477</height>
+    <height>503</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="OpenVideo">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>20</y>
-      <width>80</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>OpenVideo</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="VideoFile">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>20</y>
-      <width>361</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>No File</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="ShowTrack">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>85</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>ShowTrack</string>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QGroupBox" name="Parametros">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>120</y>
-      <width>371</width>
-      <height>301</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string/>
-    </property>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>247</width>
-       <height>257</height>
-      </rect>
-     </property>
-     <layout class="QFormLayout" name="formLayout">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="2" column="4">
+     <widget class="QPushButton" name="TestFileButton">
+      <property name="text">
+       <string>Test File</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2" colspan="3">
+     <widget class="QLabel" name="SVMFile">
+      <property name="text">
+       <string>No File</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="3">
+     <layout class="QFormLayout" name="formLayout_2">
       <item row="0" column="0">
-       <widget class="QLineEdit" name="StartFrame">
+       <widget class="QPushButton" name="ProcesarButton">
         <property name="text">
-         <string>0</string>
+         <string>Procesar</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="StartFrameLabel">
+       <widget class="QPushButton" name="CrearDiccButton">
         <property name="text">
-         <string>Start Frame</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="EndFrame">
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="EndFrameLabel">
-        <property name="text">
-         <string>End Frame</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLineEdit" name="TrajectoryLength">
-        <property name="text">
-         <string>15</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="TrajectorLengthLabel">
-        <property name="text">
-         <string>Trajectory Length</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLineEdit" name="SamplingStride">
-        <property name="text">
-         <string>5</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="SamplingStrideLabel">
-        <property name="text">
-         <string>Sampling Stride</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLineEdit" name="NeighborhoodSize">
-        <property name="text">
-         <string>32</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QLabel" name="NeighborhoodSizeLabel">
-        <property name="text">
-         <string>Neighborhood Size</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLineEdit" name="SpatialCells">
-        <property name="text">
-         <string>2</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QLabel" name="SpatialCellsLabel">
-        <property name="text">
-         <string>Spatial Cells</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLineEdit" name="TemporaryCells">
-        <property name="text">
-         <string>3</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QLabel" name="TemporaryCellsLabel">
-        <property name="text">
-         <string>Temporary Cells</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLineEdit" name="ScaleNumber">
-        <property name="text">
-         <string>8</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QLabel" name="ScaleNumberLabel">
-        <property name="text">
-         <string>Scale Number</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0">
-       <widget class="QLineEdit" name="InitialGap">
-        <property name="text">
-         <string>1</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="1">
-       <widget class="QLabel" name="InitialGapLabel">
-        <property name="text">
-         <string>Initial Gap</string>
+         <string>Crear Dicc.</string>
         </property>
        </widget>
       </item>
      </layout>
-    </widget>
-   </widget>
-   <widget class="QCheckBox" name="ParametrosCheckBox">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>100</y>
-      <width>91</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Parámetros</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>70</y>
-      <width>168</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <layout class="QFormLayout" name="formLayout_2">
-     <item row="0" column="0">
-      <widget class="QPushButton" name="ProcesarButton">
-       <property name="text">
-        <string>Procesar</string>
+    </item>
+    <item row="3" column="0">
+     <widget class="QCheckBox" name="ParametrosCheckBox">
+      <property name="text">
+       <string>Parámetros</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLabel" name="SVMFileName">
+      <property name="text">
+       <string>SVM:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="DOFDirectorioButton">
+        <property name="text">
+         <string>DOF Directorio</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="DOFDirDiccButton">
+        <property name="text">
+         <string>DOF Dir. Dicc</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="TrainSVMButton">
+        <property name="text">
+         <string>Train SVM</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QPushButton" name="OpenVideo">
+      <property name="text">
+       <string>OpenVideo</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QCheckBox" name="ShowTrack">
+      <property name="text">
+       <string>ShowTrack</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="3">
+     <widget class="QLabel" name="VideoFile">
+      <property name="text">
+       <string>No File</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="4">
+     <widget class="QGroupBox" name="Parametros">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QWidget" name="layoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>247</width>
+         <height>257</height>
+        </rect>
        </property>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLineEdit" name="StartFrame">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="StartFrameLabel">
+          <property name="text">
+           <string>Start Frame</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="EndFrame">
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="EndFrameLabel">
+          <property name="text">
+           <string>End Frame</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLineEdit" name="TrajectoryLength">
+          <property name="text">
+           <string>15</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLabel" name="TrajectorLengthLabel">
+          <property name="text">
+           <string>Trajectory Length</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLineEdit" name="SamplingStride">
+          <property name="text">
+           <string>5</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLabel" name="SamplingStrideLabel">
+          <property name="text">
+           <string>Sampling Stride</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLineEdit" name="NeighborhoodSize">
+          <property name="text">
+           <string>32</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLabel" name="NeighborhoodSizeLabel">
+          <property name="text">
+           <string>Neighborhood Size</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLineEdit" name="SpatialCells">
+          <property name="text">
+           <string>2</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLabel" name="SpatialCellsLabel">
+          <property name="text">
+           <string>Spatial Cells</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLineEdit" name="TemporaryCells">
+          <property name="text">
+           <string>3</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLabel" name="TemporaryCellsLabel">
+          <property name="text">
+           <string>Temporary Cells</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLineEdit" name="ScaleNumber">
+          <property name="text">
+           <string>8</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QLabel" name="ScaleNumberLabel">
+          <property name="text">
+           <string>Scale Number</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLineEdit" name="InitialGap">
+          <property name="text">
+           <string>1</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QLabel" name="InitialGapLabel">
+          <property name="text">
+           <string>Initial Gap</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="CrearDiccButton">
-       <property name="text">
-        <string>Crear Dicc.</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>70</y>
-      <width>280</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QPushButton" name="DOFDirectorioButton">
-       <property name="text">
-        <string>DOF Directorio</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="DOFDirDiccButton">
-       <property name="text">
-        <string>DOF Dir. Dicc</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="TrainSVMButton">
-       <property name="text">
-        <string>Train SVM</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

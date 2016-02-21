@@ -97,11 +97,16 @@ void MainWindow::on_CrearDiccButton_clicked()
 void MainWindow::on_DOFDirectorioButton_clicked()
 {
     QString fullName = QFileDialog::getOpenFileName(this,
-            tr("Open Diccionary"), "/home/ercmos", tr("Diccionary Files (*.avi)"));
+            tr("Open Video Files"), "/home/ercmos", tr("Video Files (*.avi)"));
 
     QString dirName = QFileInfo(fullName).absolutePath();
     //QString fileName = QFileInfo(fullName).fileName();
 
+/*    QString dirName = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                 "/home/ercmos",
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+*/
     DenseTrack procesar;
     if (ui->ParametrosCheckBox->isChecked())
     {
@@ -115,11 +120,11 @@ void MainWindow::on_DOFDirectorioButton_clicked()
 
 void MainWindow::on_DOFDirDiccButton_clicked()
 {
-    QString fullName = QFileDialog::getOpenFileName(this,
+   QString fullName = QFileDialog::getOpenFileName(this,
             tr("Open Diccionary"), "/home/ercmos", tr("Diccionary Files (*.txt)"));
 
     QString dirName = QFileInfo(fullName).absolutePath();
-    QString fileName = QFileInfo(fullName).fileName();
+    //QString fileName = QFileInfo(fullName).fileName();
 
     BoW saco;
     saco.CrearDiccionarioDirectorio(dirName.toStdString());
@@ -127,78 +132,77 @@ void MainWindow::on_DOFDirDiccButton_clicked()
 
 void MainWindow::on_TrainSVMButton_clicked()
 {
+/*    QString dirName = QFileDialog::getExistingDirectory(this, tr("Open Directory (*.yml)"),
+                                                 "/home/ercmos",
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+*/
     QString fullName = QFileDialog::getOpenFileName(this,
-            tr("Open Diccionary"), "/home/ercmos", tr("Diccionary Files (*.yml)"));
+               tr("Open Diccionary"), "/home/ercmos", tr("Clustered Labeled Diccionary File (*.yml)"));
 
-    QString dirName = QFileInfo(fullName).absolutePath();
+    //QString dirName = QFileInfo(fullName).absolutePath();
     QString fileName = QFileInfo(fullName).fileName();
-    string extension;
-    string fichero;
-
-    BoW saco;
-    saco.CrearDiccionarioAcciones(dirName.toStdString());
-
-    if(fileName.toStdString().find_last_of(".") != std::string::npos)
-            extension = fileName.toStdString().substr(fileName.toStdString().find_last_of(".")+1);
-            fichero = fileName.toStdString().substr(0,fileName.toStdString().find_last_of("."));
-
-    Mat vocabulary, vocabulary_f;
-    FileStorage fs(fullName.toStdString().c_str(), FileStorage::READ);
-        fs[fichero.c_str()] >> vocabulary;
-        vocabulary.convertTo(vocabulary_f, CV_32FC1);
+    Mat LabeledActions,LabeledActions_f;
+    //FileStorage fs(dirName.toStdString()+"/"+"LabeledActions_Clustered.yml", FileStorage::READ);
+    FileStorage fs(fullName.toStdString(), FileStorage::READ);
+        fs["LabeledActions"] >> LabeledActions;
+        LabeledActions.convertTo(LabeledActions_f, CV_32FC1);
         fs.release();
 
-    Mat label,label_f;
-    //QString dirName = QFileInfo(fullName).absolutePath();
-    string labelfile=dirName.toStdString()+"/"+fichero.c_str()+"_Labels."+extension;
-    FileStorage fs2(labelfile, FileStorage::READ);
-        fs2[fichero.c_str()] >> label;
-        label.convertTo(label_f, CV_32FC1);
-        fs2.release();
+    Mat Cdata(LabeledActions_f.rows,LabeledActions_f.cols-1,CV_32FC1), Clabes(LabeledActions_f.rows,1,CV_32FC1);
+    Clabes=LabeledActions_f.colRange(LabeledActions_f.cols-1,LabeledActions_f.cols);
+    Cdata=LabeledActions_f.colRange(0,LabeledActions_f.cols-1);
+    string Name = fullName.toStdString().substr(0,fullName.toStdString().find_first_of(".")) + ".xml";
+    QString Nombre=QString::fromStdString(Name);
+    ui->SVMFile->setText(Nombre);
+    Classifier SVM;
+    SVM.svm_train(Cdata,Clabes,Name);
+}
+
+void MainWindow::on_TestFileButton_clicked()
+{
 /*
-    float trainingData[4][2]= { {501, 10}, {255, 10}, {501, 255}, {10, 501} };
-    Mat trainingDataMat(4, 2, CV_32FC1, trainingData);
+    DenseTrack procesar;
+    if (ui->ParametrosCheckBox->isChecked())
+    {
+        procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(), ui->ParametrosCheckBox->isChecked(), ui->StartFrame->text().toInt(),ui->EndFrame->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->SamplingStride->text().toInt(),ui->NeighborhoodSize->text().toInt(),ui->SpatialCells->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->ScaleNumber->text().toInt(),ui->InitialGap->text().toInt());
+    }
+    else
+    {
+        procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(), ui->ParametrosCheckBox->isChecked());
+    }
+    BoW saco;
+    string Name=ui->VideoFile->text().toStdString();
+    string Path=Name.substr(0,Name.find_last_of("/"));
+    Name=Name.substr(0,Name.find_first_of("."));
+    Name=Name+".txt";
+    Name=Name.substr(Name.find_last_of("/")+1);
 
-        // Set up training data
-    float etiquetas[4] = {1.0, -1.0, -1.0, -1.0};
-    Mat etiquetasMat(4, 1, CV_32FC1, etiquetas);
 
-    Mat voc(trainingDataMat.rows,trainingDataMat.cols,CV_32FC1),lab(etiquetasMat.rows,etiquetasMat.cols,CV_32FC1);
-
-    voc.at<float>(0,0)=501; voc.at<float>(0,1)=10;
-    voc.at<float>(1,0)=255; voc.at<float>(1,1)=10;
-    voc.at<float>(2,0)=501; voc.at<float>(2,1)=255;
-    voc.at<float>(3,0)=10; voc.at<float>(3,1)=501;
-
-    lab.at<float>(0)=1.0;
-    lab.at<float>(1)=-1.0;
-    lab.at<float>(2)=-1.0;
-    lab.at<float>(3)=-1.0;
-
-    Classifier svm_class;
-    //voc.refcount=0;
-    //lab.refcount=0;
-    std::cout << std::endl << "vocabulary=" << vocabulary << std::endl;
-    std::cout << std::endl << "voc=" << voc << std::endl;
-    std::cout << std::endl << "vocabulary_f=" << vocabulary_f << std::endl;
-
-    cv::Mat diff = trainingDataMat != vocabulary_f;
-    std::cout << std::endl << "diff=" << diff << std::endl;
-    cv::compare(etiquetasMat, label_f, diff, cv::CMP_NE);
-    std::cout << std::endl << "compare=" << diff << std::endl;
+    saco.CrearDiccionario(Name,Path);
 */
-    Classifier svm_class;
-    svm_class.svm(vocabulary_f,label_f,vocabulary,label);
-//    Track kk;
-    //Ptr<DescriptorExtractor> extractor = OFDE::create("ofde");
-    //Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("FlannBased");
-    Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("SURF");
-    Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("FlannBased");
-    //Ptr<DescriptorExtractor> extractor(new Track);
-    //create Sift descriptor extractor
-    //Ptr<DescriptorExtractor> extractor(new SiftDescriptorExtractor);
-//    Ptr<Track> extractor(new Track);
-    BOWImgDescriptorExtractor bowide(extractor,matcher);
-    bowide.setVocabulary(vocabulary);
-    //bowide().setVocabulary(vocabulary);
+    QString DicName = QFileDialog::getOpenFileName(this,
+               tr("Open Diccionary"), "/home/ercmos", tr("Clustered Labeled Diccionary File (*.yml)"));
+
+    //QString dirDicName = QFileInfo(DicName).absolutePath();
+    //QString fileDicName = QFileInfo(DicName).fileName();
+
+    QString SVMName = QFileDialog::getOpenFileName(this,
+               tr("Open SVM"), "/home/ercmos", tr("Clustered Labeled Diccionary File (*.xml)"));
+
+    //QString dirSVMName = QFileInfo(SVMName).absolutePath();
+    //QString fileSVMName = QFileInfo(SVMName).fileName();
+
+    Classifier SVM;
+    Mat testData,testData_f;
+    FileStorage fs(DicName.toStdString(), FileStorage::READ);
+        fs["LabeledActions"] >> testData;
+        testData.convertTo(testData_f, CV_32FC1);
+        fs.release();
+
+    Mat Cdata(testData.rows,testData.cols-1,CV_32FC1), Clabes(testData.rows,1,CV_32FC1);
+    Clabes=testData.colRange(testData.cols-1,testData.cols);
+    Cdata=testData.colRange(0,testData.cols-1);
+
+    SVM.svm_test(Cdata,Clabes,SVMName.toStdString());
 }

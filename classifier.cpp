@@ -20,7 +20,8 @@ int size=200;
 //int eq=0;
 
 
-void Classifier::svm(cv::Mat& trainingData, cv::Mat& trainingClasses, cv::Mat& testData, cv::Mat& testClasses)
+//void Classifier::svm(cv::Mat& trainingData, cv::Mat& trainingClasses, cv::Mat& testData, cv::Mat& testClasses)
+void Classifier::svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses, std::string fileName)
 {
     CvSVMParams param = CvSVMParams();
 
@@ -47,10 +48,12 @@ void Classifier::svm(cv::Mat& trainingData, cv::Mat& trainingClasses, cv::Mat& t
 
     // SVM training (use train auto for OpenCV>=2.0)
     CvSVM svm(trainingData, trainingClasses, cv::Mat(), cv::Mat(), params);
-//    cout << "data=" << trainingClasses.data << endl;
-    CvSVM svm2(testData, testClasses, cv::Mat(), cv::Mat(), params);
 
-    cv::Mat predicted(testClasses.rows, 1, CV_32F);
+    svm.save(fileName.c_str());
+//    cout << "data=" << trainingClasses.data << endl;
+//    CvSVM svm2(testData, testClasses, cv::Mat(), cv::Mat(), params);
+/*
+    cv::Mat predicted(testClasses.rows, 1, CV_32FC1);
 
     for(int i = 0; i < testData.rows; i++) {
         cv::Mat sample = testData.row(i);
@@ -76,6 +79,32 @@ void Classifier::svm(cv::Mat& trainingData, cv::Mat& trainingClasses, cv::Mat& t
         }
     cv::imshow("Support Vectors", plot_sv);
     }
+*/
+}
+
+void Classifier::svm_test(cv::Mat& testData, cv::Mat& testClasses, std::string fileName)
+{
+    // SVM load
+    CvSVM svm;
+
+    svm.load(fileName.c_str());
+
+
+
+    cv::Mat predicted(testClasses.rows, 1, CV_32FC1);
+
+    for(int i = 0; i < testData.rows; i++)
+    {
+        cv::Mat sample = testData.row(i);
+
+        float x = sample.at<float>(0,0);
+        float y = sample.at<float>(0,1);
+
+        predicted.at<float>(i, 0) = svm.predict(sample);
+    }
+
+    cout << "Accuracy_{SVM} = " << evaluate(predicted, testClasses) << endl;
+    plot_binary(testData, predicted, "Predictions SVM");
 }
 
 // accuracy

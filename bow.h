@@ -28,14 +28,10 @@ public:
     BoW();
     ~BoW();
     //////////////// CrearDiccionario ///////////////////
-    void CrearDiccionario(std::string file, std::string dir);
+    void CrearDiccionario(std::string fileName, std::string dirName);
     void CrearDiccionarioDirectorio(std::string dir);
     void CrearDiccionarioAcciones(std::string dir);
     //void CrearDiccionario(std::string descriptor);
-    ////////////////////////////////////////////////
-
-    //////////////// TageadorDiccionario ///////////////////
-    void TageadorDiccionario(std::string dirName, std::string fileName);
     ////////////////////////////////////////////////
 };
 
