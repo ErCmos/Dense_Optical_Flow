@@ -534,24 +534,34 @@ void BoW::BoW_Clasificador(std::string dirName, std::string VocabularyName)
         fs.release();
         Mat Cdata=vocabulary_f.colRange(0,vocabulary_f.cols-1);
 
-    float min=0, index=0;
-    EuclDist = Mat::zeros(1,vocabulary_f.size,CV_32FC1);
-    Mat HistEuclDist = Mat::zeros(featuresUnclustered.rows,EuclDist.rows,CV_32FC1);
+    EuclDist = Mat::zeros(Cdata.rows,1,CV_32FC1);
+    //Mat HistEuclDist = Mat::zeros(featuresUnclustered.rows,EuclDist.rows,CV_32FC1);
+    Mat HistEuclDist = Mat::zeros(1,EuclDist.rows,CV_32FC1);
     //Busco la Distancia Euclídea entre cada fila de featuresUnclustered y cada palabra del vocabulario
-    for (int i=0; i<=featuresUnclustered.rows; ++i)
+    for (int i=0; i<descriptor.rows; ++i)
     {
-        for (int j=0; j<=vocabulary_f.rows-1; ++j)
+        for (int j=0; j<Cdata.rows; ++j)
         {
-            float dist=norm(featuresUnclustered.row(i),Cdata.row(j),NORM_L2);
-            EuclDist.at<float>(j-1,1)=dist;
+            float dist=norm(descriptor.row(i),Cdata.row(j),NORM_L2);
+            EuclDist.at<float>(0,j)=dist;
             cout << endl << "j=" << j << "dist=" << dist << endl;
         }
         cout << endl << endl << "EuclDist= " << EuclDist << endl;
         double minVal,maxVal;
         int minIndx,maxIndx;
         minMaxLoc(SparseMat(EuclDist),&minVal,&maxVal,&minIndx,&maxIndx);
-        //index=0;
-        ++HistEuclDist.at<float>(minIndx,1);
+        ++HistEuclDist.at<float>(0,minIndx);
+        cout << endl << "HistEuclDist= " << HistEuclDist << endl;
     }
+    float NormHistEuclDist=sum(HistEuclDist)[0];
+    Mat test=HistEuclDist.clone();
+    for (int k=0; k<=HistEuclDist.cols;++k)
+    {
+        test.at<float>(0,k)=test.at<float>(0,k)/NormHistEuclDist;
+    }
+   // normalize(HistEuclDist, NormHistEuclDist, 0, 1, NORM_MINMAX, CV_32FC1);
+    normalize(HistEuclDist, HistEuclDist, 0, 1, NORM_MINMAX, -1, Mat() );
+    cout << endl << "NormHistEuclDist= " << HistEuclDist << endl;
+    cout << endl << "Test= " << test << endl;
 }
 ////////////////////////////////////////////////
