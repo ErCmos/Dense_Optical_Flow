@@ -89,7 +89,7 @@ void Classifier::svm_test(cv::Mat& testData, cv::Mat& testClasses, std::string f
 
     svm.load(fileName.c_str());
 
-
+    float pred=svm.predict(testData);
 
     cv::Mat predicted(testClasses.rows, 1, CV_32FC1);
 

@@ -48,6 +48,8 @@ private slots:
 
     void on_TestFileButton_clicked();
 
+    void on_ClusterDiccButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

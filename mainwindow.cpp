@@ -130,6 +130,23 @@ void MainWindow::on_DOFDirDiccButton_clicked()
     saco.CrearDiccionarioDirectorio(dirName.toStdString());
 }
 
+void MainWindow::on_ClusterDiccButton_clicked()
+{
+    QString fullDiccName = QFileDialog::getOpenFileName(this,
+               tr("Open Diccionary"), "/home/ercmos", tr("Diccionary File (*.yml)"));
+    QString dirDiccName = QFileInfo(fullDiccName).absolutePath();
+    QString fileDiccName = QFileInfo(fullDiccName).fileName();
+
+    QString fullTestName = QFileDialog::getOpenFileName(this,
+               tr("Open TestFiles"), "/home/ercmos", tr("Test File (*.txt)"));
+    QString dirTestName = QFileInfo(fullTestName).absolutePath();
+    QString fileTestName = QFileInfo(fullTestName).fileName();
+
+    BoW saco;
+    //saco.CrearDiccionarioAcciones(dirDiccName.toStdString());
+    saco.BoW_Clasificador(dirTestName.toStdString(),fullDiccName.toStdString());
+}
+
 void MainWindow::on_TrainSVMButton_clicked()
 {
 /*    QString dirName = QFileDialog::getExistingDirectory(this, tr("Open Directory (*.yml)"),
@@ -148,6 +165,10 @@ void MainWindow::on_TrainSVMButton_clicked()
         fs["LabeledActions"] >> LabeledActions;
         LabeledActions.convertTo(LabeledActions_f, CV_32FC1);
         fs.release();
+
+    /*////////////////////////////////////////////////////////////////////////////////////////////*/
+        //norm(LabeledActions_f);
+    /*////////////////////////////////////////////////////////////////////////////////////////////*/
 
     Mat Cdata(LabeledActions_f.rows,LabeledActions_f.cols-1,CV_32FC1), Clabes(LabeledActions_f.rows,1,CV_32FC1);
     Clabes=LabeledActions_f.colRange(LabeledActions_f.cols-1,LabeledActions_f.cols);
@@ -182,7 +203,7 @@ void MainWindow::on_TestFileButton_clicked()
     saco.CrearDiccionario(Name,Path);
 */
     QString DicName = QFileDialog::getOpenFileName(this,
-               tr("Open Diccionary"), "/home/ercmos", tr("Clustered Labeled Diccionary File (*.yml)"));
+               tr("Open Test File Features"), "/home/ercmos", tr("Features File (*.yml)"));
 
     //QString dirDicName = QFileInfo(DicName).absolutePath();
     //QString fileDicName = QFileInfo(DicName).fileName();
@@ -196,13 +217,16 @@ void MainWindow::on_TestFileButton_clicked()
     Classifier SVM;
     Mat testData,testData_f;
     FileStorage fs(DicName.toStdString(), FileStorage::READ);
-        fs["LabeledActions"] >> testData;
+        //fs["LabeledActions"] >> testData;
+        fs["Action"] >> testData;
         testData.convertTo(testData_f, CV_32FC1);
         fs.release();
 
-    Mat Cdata(testData.rows,testData.cols-1,CV_32FC1), Clabes(testData.rows,1,CV_32FC1);
-    Clabes=testData.colRange(testData.cols-1,testData.cols);
-    Cdata=testData.colRange(0,testData.cols-1);
+//    Mat Cdata(testData.rows,testData.cols-1,CV_32FC1), Clabes(testData.rows,1,CV_32FC1);
+//    Clabes=testData.colRange(testData.cols-1,testData.cols);
+//    Cdata=testData.colRange(0,testData.cols-1);
 
-    SVM.svm_test(Cdata,Clabes,SVMName.toStdString());
+//    SVM.svm_test(Cdata,Clabes,SVMName.toStdString());
+      Mat Clabes(testData.rows,1,CV_32FC1);
+      SVM.svm_test(testData_f,Clabes,SVMName.toStdString());
 }

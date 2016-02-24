@@ -32,6 +32,7 @@ public:
     void CrearDiccionarioDirectorio(std::string dir);
     void CrearDiccionarioAcciones(std::string dir);
     //void CrearDiccionario(std::string descriptor);
+    void BoW_Clasificador(std::string dirName, std::string VocabularyName);
     ////////////////////////////////////////////////
 };
 
