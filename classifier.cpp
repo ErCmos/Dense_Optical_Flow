@@ -46,6 +46,8 @@ void Classifier::svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses, std:
     params.kernel_type = CvSVM::LINEAR;
     params.term_crit   = cvTermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
 
+    //cout << "Clases: " << trainingClasses << endl;
+
     // SVM training (use train auto for OpenCV>=2.0)
     CvSVM svm(trainingData, trainingClasses, cv::Mat(), cv::Mat(), params);
 

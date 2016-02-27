@@ -43,7 +43,7 @@ void BoW::CrearDiccionario(std::string fileName, std::string dirName)
         while (pch != NULL)
         {
           number_of_colums++;
-          pch = strtok (NULL, "\t");
+          pch = strtok (NULL, "\t\n");
         }
 
         free(pch);
@@ -84,7 +84,7 @@ void BoW::CrearDiccionario(std::string fileName, std::string dirName)
               //printf ("%s\n",pch);
               float value=atof(pch);
               MatDescriptor_TMP_SVM.at<float>(rows,cols)=value;
-              pch = strtok (NULL, "\t");
+              pch = strtok (NULL, "\t\n");
               ++cols;
             }
 
@@ -134,6 +134,8 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
 
     std::string file;
     string action;
+    int MxFeaturesPerFile=2000,MxFeaturesPerAction=25*MxFeaturesPerFile;
+    //int MxFeaturesPerFile=2,MxFeaturesPerAction=3;
 
     if(dirName.find_last_of("/") != std::string::npos)
             action = dirName.substr(dirName.find_last_of("/")+1);
@@ -147,7 +149,7 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
             if(strcmp(entry->d_name,".") != 0 && strcmp(entry->d_name,".."))
             {
                 string Name=entry->d_name;
-                if(Name.substr(Name.find_first_of(".")+1) == "txt")
+                if(Name.substr(Name.find_first_of(".")+1) == "txt" && featuresUnclustered.rows+1<MxFeaturesPerAction)
                 {
                     file=dirName+"/"+Name;
                     const char *fileName = file.c_str();
@@ -168,8 +170,8 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                     pch = strtok (line,"\t");
                     while (pch != NULL)
                     {
-                      number_of_colums++;
-                      pch = strtok (NULL, "\t");
+                        number_of_colums++;
+                        pch = strtok (NULL, "\t\n");
                     }
                     free(pch);
                     rewind(fp); //rewind the file to count the lines
@@ -181,8 +183,16 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                     } while (ch != EOF);
 
                 /*////////////////////////////////////////////////////*/
-                    Mat MatLabels_TMP_SVM(number_of_lines,1,CV_32FC1);
-                    Mat MatDescriptor_TMP_SVM(number_of_lines,number_of_colums,CV_32FC1);
+                    //Mat MatLabels_TMP_SVM(number_of_lines,1,CV_32FC1);
+                    //Mat MatDescriptor_TMP_SVM(number_of_lines,number_of_colums,CV_32FC1);
+                    Mat MatLabels_TMP_SVM(MxFeaturesPerFile,1,CV_32FC1);
+                    Mat MatDescriptor_TMP_SVM(MxFeaturesPerFile,number_of_colums,CV_32FC1);
+
+                    if (number_of_lines<MxFeaturesPerFile)
+                    {
+                        MatLabels_TMP_SVM.rows=number_of_lines;
+                        MatDescriptor_TMP_SVM.rows=number_of_lines;
+                    }
 
                     std::map<float, std::string> actions;
 
@@ -199,7 +209,7 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                     int cols=0;
                     rewind(fp);
 
-                    while ((read = getline(&line, &len, fp)) != -1)
+                    while ((read = getline(&line, &len, fp)) != -1 && rows+1<=MatDescriptor_TMP_SVM.rows)
                     {
                         //Extract parts separated by "\t"
                         char * pch;
@@ -209,9 +219,12 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                           //printf ("%s\n",pch);
                           float value=atof(pch);
                           MatDescriptor_TMP_SVM.at<float>(rows,cols)=value;
-                          pch = strtok (NULL, "\t");
+                          //cout << endl << "Line= " << MatDescriptor_TMP_SVM << endl;
+                          pch = strtok (NULL, "\t\n");
                           ++cols;
                         }
+
+                        //cout << "desc: " << MatDescriptor_TMP_SVM << endl;
 
                         free(pch);
                         // Use the map
@@ -233,6 +246,9 @@ void BoW::CrearDiccionarioDirectorio(std::string dirName)
                         free(line);
 
                     //featuresUnclustered.push_back(MatDescriptor_TMP_SVM.reshape(1,1));   // One line per action.
+
+                    //cout << endl << "Features= " << MatDescriptor_TMP_SVM << endl;
+
                     featuresUnclustered.push_back(MatDescriptor_TMP_SVM);
                     LabelsUnclustered.push_back(MatLabels_TMP_SVM);
                 }
@@ -315,6 +331,7 @@ void BoW::CrearDiccionarioAcciones(std::string dirName)
                 {
                     file=dirName+"/"+Name;
                     action=Name.substr(0,Name.find_first_of("."));
+                    cout << endl << "Añadiendo " << action << endl;
                     Mat vocabulary, vocabulary_f;
                     FileStorage fs(file.c_str(), FileStorage::READ);
                         fs[action.c_str()] >> vocabulary;
@@ -338,18 +355,19 @@ void BoW::CrearDiccionarioAcciones(std::string dirName)
                     }
                     TrainingData.push_back(vocabulary_f);
                     TrainingLabels.push_back(labels);
+                    cout << endl << action << " añadida" << endl;
                 }
             }
         }
     }
-
+/*
     Mat DataLabeled;
     hconcat(TrainingData,TrainingLabels,DataLabeled);
-    //concat data with labels to avoid unmach them
-
+    cout << endl << "Generando Datos Etiquetados" << endl;
+*/
     //Construct BOWKMeansTrainer
     //the number of bags
-    int dictionarySize=10;
+    int dictionarySize=2000;
     //define Term Criteria
     TermCriteria tc(CV_TERMCRIT_ITER,100,0.001);
     //retries number
@@ -357,21 +375,32 @@ void BoW::CrearDiccionarioAcciones(std::string dirName)
     //necessary flags
     int flags=KMEANS_PP_CENTERS;
     //Create the BoW (or BoF) trainer
+    cout << endl << "Generando Diccionario" << endl;
     BOWKMeansTrainer bowTrainer(dictionarySize,tc,retries,flags);
     //BOWKMeansTrainer bowTrainer(dictionarySize);
 //    bowTrainer.add(TrainingData);
     //cluster the feature vectors
 //    Mat dictionary=bowTrainer.cluster(TrainingData);
 //    Mat dictionary_labels=bowTrainer.cluster(TrainingLabels);
-    Mat LabeledDictionary=bowTrainer.cluster(DataLabeled);
+    cout << endl << "Clusterizando Diccionario" << endl;
+    clock_t begin=clock();
+    Mat Dictionary=bowTrainer.cluster(TrainingData);
+    clock_t end=clock();    
+    //cout << "Time elapsed: " << double(diffclock(end,begin)) << " ms"<< endl;
+    cout << "Time elapsed: " << double((end-begin)/ CLOCKS_PER_SEC) << " ms"<< endl;
+    
     //Mat dictionary=bowTrainer.cluster();
     //store the vocabulary
     //FileStorage fs("diccionario.yml", FileStorage::WRITE);
 //    FileStorage fs(dirName+"/"+"Actions_Clustered.yml", FileStorage::WRITE);
-    FileStorage fs(dirName+"/"+"LabeledActions_Clustered.yml", FileStorage::WRITE);
+    cout << endl << "Guardando Diccionario" << endl;
+    begin=clock();
+    FileStorage fs(dirName+"/"+"Actions_Clustered.yml", FileStorage::WRITE);
+    end=clock();    
+    cout << "Time elapsed: " << double((end-begin)/ CLOCKS_PER_SEC) << " ms"<< endl;
     //fs << action.c_str() << featuresUnclustered;
     //fs << "Actions" << dictionary;
-    fs << "LabeledActions" << LabeledDictionary;
+    fs << "Actions" << Dictionary;
     fs.release();
 /*
     FileStorage fs2(dirName+"/"+"Labels_Clustered.yml", FileStorage::WRITE);

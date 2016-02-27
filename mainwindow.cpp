@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 using namespace cv::xfeatures2d;
+using namespace std;
 
 //#include "opencv2/videoio.hpp"
 //#include "opencv2/features2d.hpp"
@@ -135,16 +136,16 @@ void MainWindow::on_ClusterDiccButton_clicked()
     QString fullDiccName = QFileDialog::getOpenFileName(this,
                tr("Open Diccionary"), "/home/ercmos", tr("Diccionary File (*.yml)"));
     QString dirDiccName = QFileInfo(fullDiccName).absolutePath();
-    QString fileDiccName = QFileInfo(fullDiccName).fileName();
+/*    QString fileDiccName = QFileInfo(fullDiccName).fileName();
 
     QString fullTestName = QFileDialog::getOpenFileName(this,
                tr("Open TestFiles"), "/home/ercmos", tr("Test File (*.txt)"));
     QString dirTestName = QFileInfo(fullTestName).absolutePath();
     QString fileTestName = QFileInfo(fullTestName).fileName();
-
+*/
     BoW saco;
-    //saco.CrearDiccionarioAcciones(dirDiccName.toStdString());
-    saco.BoW_Clasificador(dirTestName.toStdString(),fullDiccName.toStdString());
+    saco.CrearDiccionarioAcciones(dirDiccName.toStdString());
+    //saco.BoW_Clasificador(dirTestName.toStdString(),fullDiccName.toStdString());
 }
 
 void MainWindow::on_TrainSVMButton_clicked()
@@ -173,6 +174,9 @@ void MainWindow::on_TrainSVMButton_clicked()
     Mat Cdata(LabeledActions_f.rows,LabeledActions_f.cols-1,CV_32FC1), Clabes(LabeledActions_f.rows,1,CV_32FC1);
     Clabes=LabeledActions_f.colRange(LabeledActions_f.cols-1,LabeledActions_f.cols);
     Cdata=LabeledActions_f.colRange(0,LabeledActions_f.cols-1);
+
+    cout << "Etiquetas: " << Clabes << endl;
+
     string Name = fullName.toStdString().substr(0,fullName.toStdString().find_first_of(".")) + ".xml";
     QString Nombre=QString::fromStdString(Name);
     ui->SVMFile->setText(Nombre);
