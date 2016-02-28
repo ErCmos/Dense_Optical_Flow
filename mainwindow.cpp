@@ -150,87 +150,50 @@ void MainWindow::on_ClusterDiccButton_clicked()
 
 void MainWindow::on_TrainSVMButton_clicked()
 {
-/*    QString dirName = QFileDialog::getExistingDirectory(this, tr("Open Directory (*.yml)"),
+    QString dirName = QFileDialog::getExistingDirectory(this, tr("DoF Train Files (*.txt)"),
                                                  "/home/ercmos",
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
-*/
-    QString fullName = QFileDialog::getOpenFileName(this,
-               tr("Open Diccionary"), "/home/ercmos", tr("Clustered Labeled Diccionary File (*.yml)"));
 
-    //QString dirName = QFileInfo(fullName).absolutePath();
-    QString fileName = QFileInfo(fullName).fileName();
-    Mat LabeledActions,LabeledActions_f;
-    //FileStorage fs(dirName.toStdString()+"/"+"LabeledActions_Clustered.yml", FileStorage::READ);
-    FileStorage fs(fullName.toStdString(), FileStorage::READ);
-        fs["LabeledActions"] >> LabeledActions;
-        LabeledActions.convertTo(LabeledActions_f, CV_32FC1);
-        fs.release();
+    QString DicfullName = QFileDialog::getOpenFileName(this,
+               tr("Open Diccionary"), "/home/ercmos", tr("Diccionary File (*.yml)"));
 
-    /*////////////////////////////////////////////////////////////////////////////////////////////*/
-        //norm(LabeledActions_f);
-    /*////////////////////////////////////////////////////////////////////////////////////////////*/
+    Mat BoWFeatures,BoWLabels;
+    BoW saco;
+    saco.BoW_DOF_DE(dirName.toStdString(),DicfullName.toStdString(),BoWFeatures, BoWLabels);
 
-    Mat Cdata(LabeledActions_f.rows,LabeledActions_f.cols-1,CV_32FC1), Clabes(LabeledActions_f.rows,1,CV_32FC1);
-    Clabes=LabeledActions_f.colRange(LabeledActions_f.cols-1,LabeledActions_f.cols);
-    Cdata=LabeledActions_f.colRange(0,LabeledActions_f.cols-1);
+    //string Name = dirName.toStdString() + "/" +dirName.toStdString().substr(dirName.toStdString().find_last_of("/")+1) + ".xml";
+    string Name = dirName.toStdString() + "/SVM.xml";
 
-    cout << "Etiquetas: " << Clabes << endl;
+    ui->SVMFile->setText(QString::fromStdString(Name));
 
-    string Name = fullName.toStdString().substr(0,fullName.toStdString().find_first_of(".")) + ".xml";
-    QString Nombre=QString::fromStdString(Name);
-    ui->SVMFile->setText(Nombre);
     Classifier SVM;
-    SVM.svm_train(Cdata,Clabes,Name);
+    SVM.svm_train(BoWFeatures,BoWLabels,Name);
 }
 
 void MainWindow::on_TestFileButton_clicked()
 {
-/*
-    DenseTrack procesar;
-    if (ui->ParametrosCheckBox->isChecked())
-    {
-        procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(), ui->ParametrosCheckBox->isChecked(), ui->StartFrame->text().toInt(),ui->EndFrame->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->SamplingStride->text().toInt(),ui->NeighborhoodSize->text().toInt(),ui->SpatialCells->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->ScaleNumber->text().toInt(),ui->InitialGap->text().toInt());
-    }
-    else
-    {
-        procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(), ui->ParametrosCheckBox->isChecked());
-    }
+    QString dirName = QFileDialog::getExistingDirectory(this, tr("DoF Test Files (*.txt)"),
+                                                 "/home/ercmos",
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+
+    QString DicfullName = QFileDialog::getOpenFileName(this,
+               tr("Open Diccionary"), "/home/ercmos", tr("Diccionary File (*.yml)"));
+
+    QString SVMfullName = QFileDialog::getOpenFileName(this,
+               tr("Open SVM"), "/home/ercmos", tr("SVM File (*.xml)"));
+
+    ui->SVMFile->setText((SVMfullName));
+
+    Mat BoWFeatures,BoWLabels;
+
     BoW saco;
-    string Name=ui->VideoFile->text().toStdString();
-    string Path=Name.substr(0,Name.find_last_of("/"));
-    Name=Name.substr(0,Name.find_first_of("."));
-    Name=Name+".txt";
-    Name=Name.substr(Name.find_last_of("/")+1);
-
-
-    saco.CrearDiccionario(Name,Path);
-*/
-    QString DicName = QFileDialog::getOpenFileName(this,
-               tr("Open Test File Features"), "/home/ercmos", tr("Features File (*.yml)"));
-
-    //QString dirDicName = QFileInfo(DicName).absolutePath();
-    //QString fileDicName = QFileInfo(DicName).fileName();
-
-    QString SVMName = QFileDialog::getOpenFileName(this,
-               tr("Open SVM"), "/home/ercmos", tr("Clustered Labeled Diccionary File (*.xml)"));
-
-    //QString dirSVMName = QFileInfo(SVMName).absolutePath();
-    //QString fileSVMName = QFileInfo(SVMName).fileName();
+    saco.BoW_DOF_DE(dirName.toStdString(),DicfullName.toStdString(),BoWFeatures, BoWLabels);
 
     Classifier SVM;
-    Mat testData,testData_f;
-    FileStorage fs(DicName.toStdString(), FileStorage::READ);
-        //fs["LabeledActions"] >> testData;
-        fs["Action"] >> testData;
-        testData.convertTo(testData_f, CV_32FC1);
-        fs.release();
-
-//    Mat Cdata(testData.rows,testData.cols-1,CV_32FC1), Clabes(testData.rows,1,CV_32FC1);
-//    Clabes=testData.colRange(testData.cols-1,testData.cols);
-//    Cdata=testData.colRange(0,testData.cols-1);
-
-//    SVM.svm_test(Cdata,Clabes,SVMName.toStdString());
-      Mat Clabes(testData.rows,1,CV_32FC1);
-      SVM.svm_test(testData_f,Clabes,SVMName.toStdString());
+    Mat Pred=SVM.svm_test(BoWFeatures,BoWLabels,SVMfullName.toStdString());
+    Mat ConfMtx=SVM.ConfusionMatrix(Pred,BoWLabels);
+    cout << "Matriz de confusion: " << endl;
+    cout << ConfMtx << endl;
 }

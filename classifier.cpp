@@ -46,12 +46,16 @@ void Classifier::svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses, std:
     params.kernel_type = CvSVM::LINEAR;
     params.term_crit   = cvTermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
 
+    //cout << "Data: " << trainingData << endl;
     //cout << "Clases: " << trainingClasses << endl;
 
     // SVM training (use train auto for OpenCV>=2.0)
+    cout << "Training SVM" << endl;
     CvSVM svm(trainingData, trainingClasses, cv::Mat(), cv::Mat(), params);
+    cout << "SVM trained" << endl;
 
     svm.save(fileName.c_str());
+    cout << "SVM saved as " << fileName << endl;
 //    cout << "data=" << trainingClasses.data << endl;
 //    CvSVM svm2(testData, testClasses, cv::Mat(), cv::Mat(), params);
 /*
@@ -84,35 +88,74 @@ void Classifier::svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses, std:
 */
 }
 
-void Classifier::svm_test(cv::Mat& testData, cv::Mat& testClasses, std::string fileName)
+Mat Classifier::svm_test(cv::Mat& testData, cv::Mat& testClasses, std::string fileName)
 {
     // SVM load
     CvSVM svm;
 
     svm.load(fileName.c_str());
 
-    float pred=svm.predict(testData);
+    //Mat prediccion(testClasses.rows,testClasses.cols,CV_32FC1);
+    Mat prediccion;
 
-    cv::Mat predicted(testClasses.rows, 1, CV_32FC1);
-
-    for(int i = 0; i < testData.rows; i++)
+    for (int i=0; i<=testClasses.rows-1; ++i)
     {
-        cv::Mat sample = testData.row(i);
-
-        float x = sample.at<float>(0,0);
-        float y = sample.at<float>(0,1);
-
-        predicted.at<float>(i, 0) = svm.predict(sample);
+        prediccion.push_back(svm.predict(testData.row(i)));
     }
 
-    cout << "Accuracy_{SVM} = " << evaluate(predicted, testClasses) << endl;
-    plot_binary(testData, predicted, "Predictions SVM");
+    cout << "Matriz Clases: " << testClasses.t() << endl;
+    cout << "Matriz Predic: " << prediccion.t() << endl;
+    return prediccion;
+}
+
+Mat Classifier::ConfusionMatrix(cv::Mat& predicted, cv::Mat& actual)
+{
+    Mat Confusion;
+    //Confusion=Mat::zeros(unique_elements(actual),unique_elements(predicted),CV_32FC1);
+    int filas=unique_elements(actual);
+    int cols=unique_elements(predicted);
+
+    if (filas>=cols)
+        Confusion=Mat::zeros(filas,filas,CV_32FC1);
+    else
+        Confusion=Mat::zeros(cols,cols,CV_32FC1);
+
+    assert(predicted.rows == actual.rows);
+
+    //for(int i = 0; i < actual.rows; i++)
+    //{
+        for(int j=0;j<predicted.rows;j++)
+        {
+            Confusion.at<float>(actual.at<float>(0,j)-1,predicted.at<float>(0,j)-1)=Confusion.at<float>(actual.at<float>(0,j)-1,predicted.at<float>(0,j)-1)+1;
+        }
+    //}
+    cout << "Matriz de confusion: " << endl;
+    cout << Confusion << endl;
+}
+
+int Classifier::unique_elements(Mat matrix)
+{
+     int len =matrix.rows;
+     if (len <= 0) return 0;
+     int unique = 1;
+
+     for (int outer = 1; outer < len; ++outer)
+     {
+        int is_unique = 1;
+        for (int inner = 0; is_unique && inner < outer; ++inner)
+        {
+             if (matrix.at<float>(0,inner) == matrix.at<float>(0,outer)) is_unique = 0;
+        }
+        if (is_unique) ++unique;
+     }
+     return unique;
 }
 
 // accuracy
 float Classifier::evaluate(cv::Mat& predicted, cv::Mat& actual)
 {
         assert(predicted.rows == actual.rows);
+
         int t = 0;
         int f = 0;
         for(int i = 0; i < actual.rows; i++) {
