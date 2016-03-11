@@ -11,7 +11,7 @@ public:
     Classifier();
     ~Classifier();
     //void svm(cv::Mat& trainingData, cv::Mat& trainingClasses, cv::Mat& testData, cv::Mat& testClasses);
-    void svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses,std::string fileName);
+    void svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses,std::string fileName, CvSVMParams param);
     cv::Mat svm_test(cv::Mat& testData, cv::Mat& testClasses, std::string fileName);
     cv::Mat ConfusionMatrix(cv::Mat& predicted, cv::Mat& actual);
 private:

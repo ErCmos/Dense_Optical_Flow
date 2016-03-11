@@ -26,7 +26,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    //explicit MainWindow(QWidget *parent = 0);
+    //explicit MainWindow(QStringList arguments, QWidget *parent = 0);
+    explicit MainWindow(int argc, char *argv[], QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
@@ -50,8 +52,11 @@ private slots:
 
     void on_ClusterDiccButton_clicked();
 
+    void on_SVM_Parameters_Check_clicked();
+
 private:
     Ui::MainWindow *ui;
+    void TestAutomatico();
 };
 
 #endif // MAINWINDOW_H

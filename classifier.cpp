@@ -21,17 +21,18 @@ int size=200;
 
 
 //void Classifier::svm(cv::Mat& trainingData, cv::Mat& trainingClasses, cv::Mat& testData, cv::Mat& testClasses)
-void Classifier::svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses, std::string fileName)
+void Classifier::svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses, std::string fileName, CvSVMParams param)
 {
-    CvSVMParams param = CvSVMParams();
+/*
+    CvSVMParams params = CvSVMParams();
 
     param.svm_type = CvSVM::C_SVC;
-    param.kernel_type = CvSVM::RBF; //CvSVM::RBF, CvSVM::LINEAR ...
+    param.kernel_type = CvSVM::RBF; //CvSVM::RBF, CvSVM::LINEAR CvSVM::POLY, CvSVM::SIGMOID
     param.degree = 0; // for poly
-    param.gamma = 20; // for poly/rbf/sigmoid
+    param.gamma = 1; // 20 for poly/rbf/sigmoid 20
     param.coef0 = 0; // for poly/sigmoid
 
-    param.C = 7; // for CV_SVM_C_SVC, CV_SVM_EPS_SVR and CV_SVM_NU_SVR
+    param.C = 1000; // 7 for CV_SVM_C_SVC, CV_SVM_EPS_SVR and CV_SVM_NU_SVR
     param.nu = 0.0; // for CV_SVM_NU_SVC, CV_SVM_ONE_CLASS, and CV_SVM_NU_SVR
     param.p = 0.0; // for CV_SVM_EPS_SVR
 
@@ -39,20 +40,24 @@ void Classifier::svm_train(cv::Mat& trainingData, cv::Mat& trainingClasses, std:
     param.term_crit.type = CV_TERMCRIT_ITER +CV_TERMCRIT_EPS;
     param.term_crit.max_iter = 1000;
     param.term_crit.epsilon = 1e-6;
-
+    */
+/*
     // Set up SVM's parameters
     CvSVMParams params;
     params.svm_type    = CvSVM::C_SVC;
     params.kernel_type = CvSVM::LINEAR;
     params.term_crit   = cvTermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
-
+*/
     //cout << "Data: " << trainingData << endl;
     //cout << "Clases: " << trainingClasses << endl;
 
     // SVM training (use train auto for OpenCV>=2.0)
+    clock_t begin=clock();
     cout << "Training SVM" << endl;
-    CvSVM svm(trainingData, trainingClasses, cv::Mat(), cv::Mat(), params);
+    CvSVM svm(trainingData, trainingClasses, cv::Mat(), cv::Mat(), param);
     cout << "SVM trained" << endl;
+    clock_t end=clock();
+    cout << "Time elapsed: " << double((end-begin)/ CLOCKS_PER_SEC) << " s"<< endl;
 
     svm.save(fileName.c_str());
     cout << "SVM saved as " << fileName << endl;
@@ -131,6 +136,7 @@ Mat Classifier::ConfusionMatrix(cv::Mat& predicted, cv::Mat& actual)
     //}
     cout << "Matriz de confusion: " << endl;
     cout << Confusion << endl;
+    return Confusion;
 }
 
 int Classifier::unique_elements(Mat matrix)

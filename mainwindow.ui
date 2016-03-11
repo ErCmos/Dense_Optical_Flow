@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>559</width>
-    <height>503</height>
+    <width>556</width>
+    <height>563</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,8 +30,8 @@
    <widget class="QLabel" name="SVMFile">
     <property name="geometry">
      <rect>
-      <x>147</x>
-      <y>96</y>
+      <x>40</x>
+      <y>90</y>
       <width>42</width>
       <height>16</height>
      </rect>
@@ -44,7 +44,7 @@
     <property name="geometry">
      <rect>
       <x>9</x>
-      <y>96</y>
+      <y>120</y>
       <width>95</width>
       <height>21</height>
      </rect>
@@ -56,8 +56,8 @@
    <widget class="QLabel" name="SVMFileName">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>96</y>
+      <x>10</x>
+      <y>90</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -114,9 +114,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>9</x>
-      <y>123</y>
-      <width>455</width>
+      <x>10</x>
+      <y>150</y>
+      <width>271</width>
       <height>312</height>
      </rect>
     </property>
@@ -346,13 +346,209 @@
      </layout>
     </widget>
    </widget>
+   <widget class="QGroupBox" name="SVM_Parameters">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>120</y>
+      <width>261</width>
+      <height>381</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>246</width>
+       <height>344</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="svm_type"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>svm_type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="kernel_type"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>kernel_type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLineEdit" name="degree"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>degree</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLineEdit" name="gamma"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>gamma</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLineEdit" name="coef0"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>coef0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLineEdit" name="C"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>C</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLineEdit" name="nu"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>nu</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLineEdit" name="p"/>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>p</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLineEdit" name="class_weights"/>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>class_weights</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0">
+       <widget class="QLineEdit" name="term_crit_type"/>
+      </item>
+      <item row="9" column="1">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>term_crit_type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLineEdit" name="term_crit_max_iter"/>
+      </item>
+      <item row="10" column="1">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>term_crit_max_iter</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0">
+       <widget class="QLineEdit" name="term_crit_epsilon"/>
+      </item>
+      <item row="11" column="1">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>term_crit_epsilon</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <zorder></zorder>
+    <zorder></zorder>
+    <zorder></zorder>
+   </widget>
+   <widget class="QCheckBox" name="SVM_Parameters_Check">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>100</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SVM_Parameters</string>
+    </property>
+   </widget>
+   <zorder>SVM_Parameters</zorder>
+   <zorder>degree</zorder>
+   <zorder>label_5</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label_2</zorder>
+   <zorder>kernel_type</zorder>
+   <zorder>svm_type</zorder>
+   <zorder>label</zorder>
+   <zorder>coef0</zorder>
+   <zorder>gamma</zorder>
+   <zorder>label_8</zorder>
+   <zorder>label_4</zorder>
+   <zorder>C</zorder>
+   <zorder>term_crit_epsilon</zorder>
+   <zorder>label_12</zorder>
+   <zorder>p</zorder>
+   <zorder>label_7</zorder>
+   <zorder>class_weights</zorder>
+   <zorder>term_crit_type</zorder>
+   <zorder>label_9</zorder>
+   <zorder>label_10</zorder>
+   <zorder>term_crit_max_iter</zorder>
+   <zorder>label_11</zorder>
+   <zorder>nu</zorder>
+   <zorder>label_6</zorder>
+   <zorder>TestFileButton</zorder>
+   <zorder>SVMFile</zorder>
+   <zorder>ParametrosCheckBox</zorder>
+   <zorder>SVMFileName</zorder>
+   <zorder>OpenVideo</zorder>
+   <zorder>ShowTrack</zorder>
+   <zorder>VideoFile</zorder>
+   <zorder>Parametros</zorder>
+   <zorder>splitter</zorder>
+   <zorder>SVM_Parameters_Check</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>559</width>
+     <width>556</width>
      <height>20</height>
     </rect>
    </property>

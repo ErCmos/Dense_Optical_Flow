@@ -17,6 +17,7 @@ DenseTrack::~DenseTrack()
 
 using namespace cv;
 using namespace constantes;
+using namespace std;
 
 int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, int start_frame, int end_frame, int track_length, int min_distance, int patch_size, int nxy_cell, int nt_cell, int scale_num, int init_gap)
 {
@@ -272,7 +273,6 @@ int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, 
 }
 
 int DenseTrack::TrackerDirectory(bool show_track, std::string dirName, bool parametros, int start_frame, int end_frame, int track_length, int min_distance, int patch_size, int nxy_cell, int nt_cell, int scale_num, int init_gap)
-//int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros)
 {
     std::string fileName;
     string action;
@@ -282,6 +282,7 @@ int DenseTrack::TrackerDirectory(bool show_track, std::string dirName, bool para
 
     DIR *pDIR;
     struct dirent *entry;
+    clock_t dir_begin=clock();
     if(pDIR=opendir(dirName.c_str()))
     {
         while(entry=readdir((pDIR)))
@@ -291,6 +292,7 @@ int DenseTrack::TrackerDirectory(bool show_track, std::string dirName, bool para
                 string Name=entry->d_name;
                 if(Name.substr(Name.find_first_of(".")+1) == "avi")
                 {
+                    clock_t file_begin=clock();
                     fileName=dirName+"/"+Name;
                     char *video = new char[fileName.length() + 1];
                     strcpy(video, fileName.c_str());
@@ -540,10 +542,15 @@ int DenseTrack::TrackerDirectory(bool show_track, std::string dirName, bool para
                         //return 0;
                     delete [] video;
                     free(salida);
+
+                    clock_t file_end=clock();
+                    cout << "Time elapsed by file procesing: " << double((file_end-file_begin)/ CLOCKS_PER_SEC) << " s"<< endl;
                 }
             }
         }
     }
+    clock_t dir_end=clock();
+    cout << "Time elapsed by directory procesing: " << double((dir_end-dir_begin)/ CLOCKS_PER_SEC) << " s"<< endl;
     return 0;
 }
 
