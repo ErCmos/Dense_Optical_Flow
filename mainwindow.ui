@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>556</width>
-    <height>563</height>
+    <width>558</width>
+    <height>562</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,14 +43,14 @@
    <widget class="QCheckBox" name="ParametrosCheckBox">
     <property name="geometry">
      <rect>
-      <x>9</x>
-      <y>120</y>
-      <width>95</width>
+      <x>20</x>
+      <y>210</y>
+      <width>121</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Parámetros</string>
+     <string>DOF_Parameters</string>
     </property>
    </widget>
    <widget class="QLabel" name="SVMFileName">
@@ -115,9 +115,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>150</y>
-      <width>271</width>
-      <height>312</height>
+      <y>210</y>
+      <width>261</width>
+      <height>291</height>
      </rect>
     </property>
     <property name="title">
@@ -127,7 +127,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>30</y>
        <width>247</width>
        <height>257</height>
       </rect>
@@ -147,13 +147,6 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="EndFrame">
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1">
        <widget class="QLabel" name="EndFrameLabel">
         <property name="text">
@@ -161,37 +154,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLineEdit" name="TrajectoryLength">
-        <property name="text">
-         <string>15</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1">
        <widget class="QLabel" name="TrajectorLengthLabel">
         <property name="text">
          <string>Trajectory Length</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLineEdit" name="SamplingStride">
-        <property name="text">
-         <string>5</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="SamplingStrideLabel">
-        <property name="text">
-         <string>Sampling Stride</string>
         </property>
        </widget>
       </item>
@@ -219,13 +185,6 @@
         </property>
         <property name="clearButtonEnabled">
          <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QLabel" name="SpatialCellsLabel">
-        <property name="text">
-         <string>Spatial Cells</string>
         </property>
        </widget>
       </item>
@@ -270,6 +229,47 @@
         </property>
         <property name="clearButtonEnabled">
          <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLineEdit" name="SamplingStride">
+        <property name="text">
+         <string>5</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLineEdit" name="TrajectoryLength">
+        <property name="text">
+         <string>15</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLabel" name="SpatialCellsLabel">
+        <property name="text">
+         <string>Spatial Cells</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="EndFrame">
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="SamplingStrideLabel">
+        <property name="text">
+         <string>Sampling Stride</string>
         </property>
        </widget>
       </item>
@@ -358,7 +358,7 @@
     <property name="title">
      <string/>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -374,7 +374,7 @@
       <item row="0" column="1">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>svm_type</string>
+         <string>svm_type=100(C_SVC)</string>
         </property>
        </widget>
       </item>
@@ -384,7 +384,7 @@
       <item row="1" column="1">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>kernel_type</string>
+         <string>kernel_type=2(RBF)</string>
         </property>
        </widget>
       </item>
@@ -464,7 +464,7 @@
       <item row="9" column="1">
        <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>term_crit_type</string>
+         <string>term_crit_type=3(Iter+EPS)</string>
         </property>
        </widget>
       </item>
@@ -490,15 +490,12 @@
       </item>
      </layout>
     </widget>
-    <zorder></zorder>
-    <zorder></zorder>
-    <zorder></zorder>
    </widget>
    <widget class="QCheckBox" name="SVM_Parameters_Check">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>100</y>
+      <x>300</x>
+      <y>120</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -507,34 +504,67 @@
      <string>SVM_Parameters</string>
     </property>
    </widget>
+   <widget class="QGroupBox" name="Homography">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>120</y>
+      <width>261</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>201</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="Homo_X"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="Homo_X_Label">
+        <property name="text">
+         <string>X_Divisions</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="Homo_Y"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="Homo_Y_Label">
+        <property name="text">
+         <string>Y_Divisions</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QCheckBox" name="Homography_checkBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>120</y>
+      <width>101</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Homography</string>
+    </property>
+   </widget>
    <zorder>SVM_Parameters</zorder>
-   <zorder>degree</zorder>
-   <zorder>label_5</zorder>
-   <zorder>label_3</zorder>
-   <zorder>label_2</zorder>
-   <zorder>kernel_type</zorder>
-   <zorder>svm_type</zorder>
-   <zorder>label</zorder>
-   <zorder>coef0</zorder>
-   <zorder>gamma</zorder>
-   <zorder>label_8</zorder>
-   <zorder>label_4</zorder>
-   <zorder>C</zorder>
-   <zorder>term_crit_epsilon</zorder>
-   <zorder>label_12</zorder>
-   <zorder>p</zorder>
-   <zorder>label_7</zorder>
-   <zorder>class_weights</zorder>
-   <zorder>term_crit_type</zorder>
-   <zorder>label_9</zorder>
-   <zorder>label_10</zorder>
-   <zorder>term_crit_max_iter</zorder>
-   <zorder>label_11</zorder>
-   <zorder>nu</zorder>
-   <zorder>label_6</zorder>
    <zorder>TestFileButton</zorder>
    <zorder>SVMFile</zorder>
-   <zorder>ParametrosCheckBox</zorder>
    <zorder>SVMFileName</zorder>
    <zorder>OpenVideo</zorder>
    <zorder>ShowTrack</zorder>
@@ -542,13 +572,16 @@
    <zorder>Parametros</zorder>
    <zorder>splitter</zorder>
    <zorder>SVM_Parameters_Check</zorder>
+   <zorder>Homography</zorder>
+   <zorder>Homography_checkBox</zorder>
+   <zorder>ParametrosCheckBox</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>556</width>
+     <width>558</width>
      <height>20</height>
     </rect>
    </property>

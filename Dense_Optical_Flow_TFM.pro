@@ -12,7 +12,7 @@ TARGET = Dense_Optical_Flow_TFM
 TEMPLATE = app
 
 INCLUDEPATH += /usr/local/include/opencv
-LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_video -lopencv_ml -lopencv_features2d -lopencv_xfeatures2d
+LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_video -lopencv_ml -lopencv_features2d -lopencv_xfeatures2d -lopencv_calib3d -lopencv_legacy
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     opticalflow.cpp \
     classifier.cpp \
     bow.cpp \
-    ofde.cpp
+    ofde.cpp \
+    cameramotion.cpp
 
 HEADERS  += mainwindow.h \
     video_player.h \
@@ -35,6 +36,7 @@ HEADERS  += mainwindow.h \
     tracker.h \
     classifier.h \
     bow.h \
-    ofde.h
+    ofde.h \
+    cameramotion.h
 
 FORMS    += mainwindow.ui

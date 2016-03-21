@@ -11,6 +11,7 @@
 //#include <opencv2/features2d.hpp>
 //#include "opencv2/xfeatures2d.hpp"
 #include "ofde.h"
+#include "cameramotion.h"
 
 #include <QMessageBox>
 #include <opencv/cv.h>
@@ -53,6 +54,8 @@ private slots:
     void on_ClusterDiccButton_clicked();
 
     void on_SVM_Parameters_Check_clicked();
+
+    void on_Homography_checkBox_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -46,7 +46,7 @@ public:
     //int Tracker(bool show_track, std::string fileName, bool parametros, int FrameInicio, int FrameFinal);
     //int Tracker(bool show_track, std::string fileName, bool parametros, int start_frame=0, int end_frame=INT_MAX, int track_length = 15, int min_distance = 5, int patch_size = 23, int nxy_cell = 2, int nt_cell = 3, int scale_num = 8, int init_gap = 1);
     int Tracker(bool show_track, std::string fileName, bool parametros, int start_frame=0, int end_frame=INT_MAX, int track_length = 15, int min_distance = 5, int patch_size = 23, int nxy_cell = 2, int nt_cell = 3, int scale_num = 8, int init_gap = 1);
-    int TrackerDirectory(bool show_track, std::string dirName, bool parametros, int start_frame=0, int end_frame=INT_MAX, int track_length = 15, int min_distance = 5, int patch_size = 23, int nxy_cell = 2, int nt_cell = 3, int scale_num = 8, int init_gap = 1);
+    int TrackerDirectory(int Homo_X, int Homo_Y, bool show_track, std::string dirName, bool parametros, int start_frame=0, int end_frame=INT_MAX, int track_length = 15, int min_distance = 5, int patch_size = 23, int nxy_cell = 2, int nt_cell = 3, int scale_num = 8, int init_gap = 1);
     //int Tracker(bool show_track, std::string fileName, bool parametros);
 };
 

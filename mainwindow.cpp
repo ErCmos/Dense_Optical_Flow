@@ -31,8 +31,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
     //if (arguments.size()<=1)
     if (argc<=1)
     {
-        ui->svm_type->setText(QString::fromStdString("CvSVM::C_SVC"));
-        ui->kernel_type->setText(QString::fromStdString("CvSVM::RBF")); //CvSVM::RBF, CvSVM::LINEAR CvSVM::POLY, CvSVM::SIGMOID
+        //ui->svm_type->setText(QString::fromStdString("CvSVM::C_SVC"));
+        ui->svm_type->setText(QString::fromStdString("100"));
+        //ui->kernel_type->setText(QString::fromStdString("CvSVM::RBF")); //CvSVM::RBF, CvSVM::LINEAR CvSVM::POLY, CvSVM::SIGMOID
+        ui->kernel_type->setText(QString::fromStdString("2")); //CvSVM::RBF, CvSVM::LINEAR CvSVM::POLY, CvSVM::SIGMOID
         ui->degree->setText(QString::fromStdString("0")); // for poly
         ui->gamma->setText(QString::fromStdString("10")); // 20 for poly/rbf/sigmoid 20
         ui->coef0->setText(QString::fromStdString("0")); // for poly/sigmoid
@@ -42,7 +44,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
         ui->p->setText(QString::fromStdString("0.0")); // for CV_SVM_EPS_SVR
 
         ui->class_weights->setText(QString::fromStdString("NULL")); // for CV_SVM_C_SVC
-        ui->term_crit_type->setText(QString::fromStdString("CV_TERMCRIT_ITER +CV_TERMCRIT_EPS"));
+        //ui->term_crit_type->setText(QString::fromStdString("CV_TERMCRIT_ITER +CV_TERMCRIT_EPS"));
+        ui->term_crit_type->setText(QString::fromStdString("3"));
         ui->term_crit_max_iter->setText(QString::fromStdString("1000"));
         ui->term_crit_epsilon->setText(QString::fromStdString("0,000001"));
     }
@@ -78,6 +81,11 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
     ui->ScaleNumber->setInputMask("999");
     ui->InitialGap->setInputMask("999");
 
+    ui->Homo_X->setInputMask("9");
+    ui->Homo_Y->setInputMask("9");
+    ui->Homo_X->setText("1");
+    ui->Homo_Y->setText("1");
+
     if (ui->ParametrosCheckBox->isChecked())
         ui->Parametros->setEnabled(true);
     else
@@ -87,6 +95,11 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
         ui->SVM_Parameters->setEnabled(true);
     else
         ui->SVM_Parameters->setEnabled(false);
+
+    if (ui->Homography_checkBox->isChecked())
+        ui->Homography->setEnabled(true);
+    else
+        ui->Homography->setEnabled(false);
 }
 
 void MainWindow::TestAutomatico()
@@ -232,6 +245,10 @@ void MainWindow::on_ParametrosCheckBox_clicked()
 void MainWindow::on_ProcesarButton_clicked()
 {
     DenseTrack procesar;
+    vector<Mat> vec_H, vec_L, blocks; //, vec_LTS;
+    CameraMotion motion;
+    string NAME;
+
     if (ui->ParametrosCheckBox->isChecked())
     {
         procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(), ui->ParametrosCheckBox->isChecked(), ui->StartFrame->text().toInt(),ui->EndFrame->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->SamplingStride->text().toInt(),ui->NeighborhoodSize->text().toInt(),ui->SpatialCells->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->ScaleNumber->text().toInt(),ui->InitialGap->text().toInt());
@@ -240,9 +257,42 @@ void MainWindow::on_ProcesarButton_clicked()
     {
         procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(), ui->ParametrosCheckBox->isChecked());
     }
-//    Tracker procesar;
-//    DenseTrack procesar;
-//    procesar.Tracker(ui->ShowTrack->isChecked(),ui->VideoFile->text().toStdString(), ui->ParametrosCheckBox->isChecked());
+
+    if ((ui->Homography_checkBox->isChecked()) && ((ui->Homo_X->text().toInt()!=1) || (ui->Homo_Y->text().toInt()!=1)))
+    {
+        motion.subdivide(ui->VideoFile->text().toStdString(),ui->Homo_Y->text().toInt(),ui->Homo_X->text().toInt(),blocks);
+
+        for (int n=0; n<(ui->Homo_Y->text().toInt())*(ui->Homo_X->text().toInt());n++)
+        {
+                stringstream converter;
+                converter << n;
+                NAME=ui->VideoFile->text().toStdString().substr(0,ui->VideoFile->text().toStdString().find_last_of("."))+"_"+converter.str()+".avi";
+                motion.get_homography_sequence(NAME,vec_H);
+                for (int i=0;i<vec_H.size(); i++)
+                {
+                    Mat L = motion.compute_Liecoeffs (vec_H[i]);
+                    vec_L.push_back(L);
+                }
+                motion.save_vectors (vec_L, NAME);
+                motion.DOF_LIE(NAME,(ui->Homo_Y->text().toInt())*(ui->Homo_X->text().toInt()));
+                remove(NAME.c_str());
+        }
+    }
+    else
+    {
+        motion.get_homography_sequence(ui->VideoFile->text().toStdString(),vec_H);
+        for (int i=0;i<vec_H.size(); i++)
+        {
+            Mat L = motion.compute_Liecoeffs (vec_H[i]);
+            vec_L.push_back(L);
+        }
+
+        /* Output timeseries of Lie coefficients */
+//        motion.construct_timeseries (vec_L, vec_LTS);
+        /* save vectors in output files */
+        motion.save_vectors (vec_L, ui->VideoFile->text().toStdString());
+        motion.DOF_LIE(ui->VideoFile->text().toStdString(),1);
+    }
 }
 
 void MainWindow::on_CrearDiccButton_clicked()
@@ -266,11 +316,11 @@ void MainWindow::on_DOFDirectorioButton_clicked()
     DenseTrack procesar;
     if (ui->ParametrosCheckBox->isChecked())
     {
-        procesar.TrackerDirectory(ui->ShowTrack->isChecked(),dirName.toStdString(), ui->ParametrosCheckBox->isChecked(), ui->StartFrame->text().toInt(),ui->EndFrame->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->SamplingStride->text().toInt(),ui->NeighborhoodSize->text().toInt(),ui->SpatialCells->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->ScaleNumber->text().toInt(),ui->InitialGap->text().toInt());
+        procesar.TrackerDirectory(ui->Homo_X->text().toInt(),ui->Homo_Y->text().toInt(), ui->ShowTrack->isChecked(),dirName.toStdString(), ui->ParametrosCheckBox->isChecked(), ui->StartFrame->text().toInt(),ui->EndFrame->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->SamplingStride->text().toInt(),ui->NeighborhoodSize->text().toInt(),ui->SpatialCells->text().toInt(),ui->TrajectoryLength->text().toInt(),ui->ScaleNumber->text().toInt(),ui->InitialGap->text().toInt());
     }
     else
     {
-        procesar.TrackerDirectory(ui->ShowTrack->isChecked(),dirName.toStdString(), ui->ParametrosCheckBox->isChecked());
+        procesar.TrackerDirectory(ui->Homo_X->text().toInt(),ui->Homo_Y->text().toInt(), ui->ShowTrack->isChecked(),dirName.toStdString(), ui->ParametrosCheckBox->isChecked());
     }
 }
 
@@ -332,10 +382,10 @@ void MainWindow::on_TrainSVMButton_clicked()
     param.p = atof(ui->p->text().toStdString().c_str()); // for CV_SVM_EPS_SVR
 
     param.class_weights = NULL; // for CV_SVM_C_SVC
-    param.term_crit.type = CV_TERMCRIT_ITER +CV_TERMCRIT_EPS;
+/*    param.term_crit.type = CV_TERMCRIT_ITER +CV_TERMCRIT_EPS;
     param.term_crit.max_iter = 1000;
     param.term_crit.epsilon = 1e-6;
-
+*/
     //param.class_weights=Mat(atoi(ui->class_weights->text().toStdString().c_str()));
     param.term_crit.type=atoi(ui->term_crit_type->text().toStdString().c_str());
     param.term_crit.max_iter=atoi(ui->term_crit_max_iter->text().toStdString().c_str());
@@ -401,4 +451,12 @@ void MainWindow::on_SVM_Parameters_Check_clicked()
         ui->SVM_Parameters->setEnabled(true);
     else
         ui->SVM_Parameters->setEnabled(false);
+}
+
+void MainWindow::on_Homography_checkBox_clicked()
+{
+    if (ui->Homography_checkBox->isChecked())
+        ui->Homography->setEnabled(true);
+    else
+        ui->Homography->setEnabled(false);
 }

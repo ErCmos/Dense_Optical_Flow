@@ -2,6 +2,7 @@
 #include "initialize.h"
 #include "descriptors.h"
 #include "opticalflow.h"
+#include "cameramotion.h"
 
 #include <QMessageBox>
 
@@ -272,7 +273,7 @@ int DenseTrack::Tracker(bool show_track, std::string fileName, bool parametros, 
     free(salida);
 }
 
-int DenseTrack::TrackerDirectory(bool show_track, std::string dirName, bool parametros, int start_frame, int end_frame, int track_length, int min_distance, int patch_size, int nxy_cell, int nt_cell, int scale_num, int init_gap)
+int DenseTrack::TrackerDirectory(int Homo_X, int Homo_Y, bool show_track, std::string dirName, bool parametros, int start_frame, int end_frame, int track_length, int min_distance, int patch_size, int nxy_cell, int nt_cell, int scale_num, int init_gap)
 {
     std::string fileName;
     string action;
@@ -545,6 +546,64 @@ int DenseTrack::TrackerDirectory(bool show_track, std::string dirName, bool para
 
                     clock_t file_end=clock();
                     cout << "Time elapsed by file procesing: " << double((file_end-file_begin)/ CLOCKS_PER_SEC) << " s"<< endl;
+
+                    //////////////////////////Homography Calculation////////////////////////////
+/*                    vector<Mat> vec_H, vec_L;
+                    CameraMotion motion;
+
+                    motion.get_homography_sequence(fileName,vec_H);
+                    for (int i=0;i<vec_H.size(); i++)
+                    {
+                        Mat L = motion.compute_Liecoeffs (vec_H[i]);
+                        vec_L.push_back(L);
+                    }
+
+                    // save vectors in output files
+                    motion.save_vectors (vec_L, fileName);
+                    motion.DOF_LIE(fileName,1);
+*/                  ////////////////////////////////////////////////////////////////////////////
+
+                    /////////////////////Homography & Slicing Calculation///////////////////////
+                    vector<Mat> vec_H, vec_L, blocks; //, vec_LTS;
+                    CameraMotion motion;
+                    string NAME;
+
+                    if ((Homo_X!=1) || (Homo_Y!=1))
+                    {
+                        motion.subdivide(fileName,Homo_Y,Homo_X,blocks);
+
+                        for (int n=0; n<(Homo_Y*Homo_X);n++)
+                        {
+                                stringstream converter;
+                                converter << n;
+                                NAME=fileName.substr(0,fileName.find_last_of("."))+"_"+converter.str()+".avi";
+                                motion.get_homography_sequence(NAME,vec_H);
+                                for (int i=0;i<vec_H.size(); i++)
+                                {
+                                    Mat L = motion.compute_Liecoeffs (vec_H[i]);
+                                    vec_L.push_back(L);
+                                }
+                                motion.save_vectors (vec_L, NAME);
+                                motion.DOF_LIE(NAME,Homo_Y*Homo_X);
+                                remove(NAME.c_str());
+                        }
+                    }
+                    else
+                    {
+                        motion.get_homography_sequence(fileName,vec_H);
+                        for (int i=0;i<vec_H.size(); i++)
+                        {
+                            Mat L = motion.compute_Liecoeffs (vec_H[i]);
+                            vec_L.push_back(L);
+                        }
+
+                        /* Output timeseries of Lie coefficients */
+                //        motion.construct_timeseries (vec_L, vec_LTS);
+                        /* save vectors in output files */
+                        motion.save_vectors (vec_L, fileName);
+                        motion.DOF_LIE(fileName,1);
+                    }
+                    ////////////////////////////////////////////////////////////////////////////
                 }
             }
         }
