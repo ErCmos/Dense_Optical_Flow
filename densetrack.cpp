@@ -547,50 +547,71 @@ int DenseTrack::TrackerDirectory(int Homo_X, int Homo_Y, bool show_track, std::s
                     clock_t file_end=clock();
                     cout << "Time elapsed by file procesing: " << double((file_end-file_begin)/ CLOCKS_PER_SEC) << " s"<< endl;
 
-                    //////////////////////////Homography Calculation////////////////////////////
-/*                    vector<Mat> vec_H, vec_L;
-                    CameraMotion motion;
-
-                    motion.get_homography_sequence(fileName,vec_H);
-                    for (int i=0;i<vec_H.size(); i++)
-                    {
-                        Mat L = motion.compute_Liecoeffs (vec_H[i]);
-                        vec_L.push_back(L);
-                    }
-
-                    // save vectors in output files
-                    motion.save_vectors (vec_L, fileName);
-                    motion.DOF_LIE(fileName,1);
-*/                  ////////////////////////////////////////////////////////////////////////////
-
                     /////////////////////Homography & Slicing Calculation///////////////////////
-                    vector<Mat> vec_H, vec_L, blocks; //, vec_LTS;
+                    vector<Mat> blocks,vec_H, vec_L; //, vec_LTS;
                     CameraMotion motion;
-                    string NAME;
 
                     if ((Homo_X!=1) || (Homo_Y!=1))
                     {
                         motion.subdivide(fileName,Homo_Y,Homo_X,blocks);
-
                         for (int n=0; n<(Homo_Y*Homo_X);n++)
                         {
-                                stringstream converter;
-                                converter << n;
-                                NAME=fileName.substr(0,fileName.find_last_of("."))+"_"+converter.str()+".avi";
-                                motion.get_homography_sequence(NAME,vec_H);
+                            vector<Mat> outputVideo;
+                     /////////////////////////////////////
+                                for (int l=0; l<blocks.size(); l=l+(Homo_Y*Homo_X))
+                                {
+                                   outputVideo.push_back(blocks.at(n+l));
+                                }
+                                /*
+                                for (int jj=0;jj<outputVideo.size();++jj)
+                                {
+                                    imshow("1",outputVideo.at(jj));
+                                    if(cv::waitKey(30) >= 0) break;
+                                    //waitKey(20); // waits to display frame
+                                }
+                                */
+                                motion.get_homography_sequence(outputVideo,vec_H);
                                 for (int i=0;i<vec_H.size(); i++)
                                 {
                                     Mat L = motion.compute_Liecoeffs (vec_H[i]);
                                     vec_L.push_back(L);
                                 }
-                                motion.save_vectors (vec_L, NAME);
-                                motion.DOF_LIE(NAME,Homo_Y*Homo_X);
-                                remove(NAME.c_str());
+                                motion.save_vectors (vec_L, fileName);
+                                motion.DOF_LIE(fileName);
+                  ////////////////////////////////////////////////
                         }
                     }
                     else
                     {
-                        motion.get_homography_sequence(fileName,vec_H);
+                        //motion.get_homography_sequence(fileName,vec_H);
+                        char *video = new char[fileName.length() + 1];
+                        strcpy(video, fileName.c_str());
+
+                        VideoCapture capture;
+                        capture.open(video);
+                        Mat frame;
+                        vector<Mat> outputVideo;
+
+                        if(!capture.isOpened())
+                        {
+                            QMessageBox msgBox;
+                            msgBox.setText("Could not initialize capturing..");
+                            //msgBox.setInformativeText("Do you want to save your changes?");
+                            //msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+                            //msgBox.setDefaultButton(QMessageBox::Save);
+                            int ret = msgBox.exec();
+                            //printf( "Could not initialize capturing..\n" );
+                            return -1;
+                        }
+                        for(;;)
+                        {
+                            capture >> frame;
+                            Mat tmp=frame.clone();  //Clone the frame or allways points the same one
+                            if (frame.empty())
+                                break;
+                            outputVideo.push_back(tmp);
+                        }
+                        motion.get_homography_sequence(outputVideo,vec_H);
                         for (int i=0;i<vec_H.size(); i++)
                         {
                             Mat L = motion.compute_Liecoeffs (vec_H[i]);
@@ -601,7 +622,7 @@ int DenseTrack::TrackerDirectory(int Homo_X, int Homo_Y, bool show_track, std::s
                 //        motion.construct_timeseries (vec_L, vec_LTS);
                         /* save vectors in output files */
                         motion.save_vectors (vec_L, fileName);
-                        motion.DOF_LIE(fileName,1);
+                        motion.DOF_LIE(fileName);
                     }
                     ////////////////////////////////////////////////////////////////////////////
                 }

@@ -16,7 +16,8 @@ class CameraMotion
 public:
     CameraMotion();
     ~CameraMotion();
-    int get_homography_sequence (std::string fileName, std::vector<cv::Mat>& vec_H);
+    //int get_homography_sequence (std::string fileName, std::vector<cv::Mat>& vec_H);
+    int get_homography_sequence (std::vector<cv::Mat> Video, std::vector<cv::Mat>& vec_H);
     void warpKeypoints(const cv::Mat& H, const std::vector<cv::KeyPoint>& in, std::vector<cv::KeyPoint>& out);
     void matches2points(const std::vector<cv::KeyPoint>& train, const std::vector<cv::KeyPoint>& query, const std::vector<cv::DMatch>& matches, std::vector<cv::Point2f>& pts_train, std::vector<cv::Point2f>& pts_query);
     void resetH(cv::Mat&H);
@@ -26,7 +27,8 @@ public:
     void construct_timeseries (const std::vector<cv::Mat>& vec_L, std::vector <cv::Mat>& vec_LTS);
     //void save_vectors (const std::vector<cv::Mat>& x, char *fname);
     void save_vectors (const std::vector<cv::Mat>& x, std::string fileName);
-    void DOF_LIE (std::string fileName, int level);
+    //void DOF_LIE (std::string fileName, int level);
+    void DOF_LIE (std::string fileName);
     int subdivide(std::string fileName, const int rowDivisor, const int colDivisor, std::vector<cv::Mat> &blocks);
 };
 

@@ -247,7 +247,7 @@ void MainWindow::on_ProcesarButton_clicked()
     DenseTrack procesar;
     vector<Mat> vec_H, vec_L, blocks; //, vec_LTS;
     CameraMotion motion;
-    string NAME;
+
 
     if (ui->ParametrosCheckBox->isChecked())
     {
@@ -264,23 +264,64 @@ void MainWindow::on_ProcesarButton_clicked()
 
         for (int n=0; n<(ui->Homo_Y->text().toInt())*(ui->Homo_X->text().toInt());n++)
         {
-                stringstream converter;
-                converter << n;
-                NAME=ui->VideoFile->text().toStdString().substr(0,ui->VideoFile->text().toStdString().find_last_of("."))+"_"+converter.str()+".avi";
-                motion.get_homography_sequence(NAME,vec_H);
+                vector<Mat> outputVideo;
+                /////////////////////////////
+                for (int l=0; l<blocks.size(); l=l+(ui->Homo_Y->text().toInt()*ui->Homo_X->text().toInt()))
+                {
+                    outputVideo.push_back(blocks.at(n+l));
+                }
+                //////////////////////////////
+                /*
+                for (int jj=0;jj<outputVideo.size();++jj)
+                {
+                    imshow("1",outputVideo.at(jj));
+                    if(cv::waitKey(30) >= 0) break;
+                    //waitKey(20); // waits to display frame
+                }
+                */
+                motion.get_homography_sequence(outputVideo,vec_H);
                 for (int i=0;i<vec_H.size(); i++)
                 {
                     Mat L = motion.compute_Liecoeffs (vec_H[i]);
                     vec_L.push_back(L);
                 }
-                motion.save_vectors (vec_L, NAME);
-                motion.DOF_LIE(NAME,(ui->Homo_Y->text().toInt())*(ui->Homo_X->text().toInt()));
-                remove(NAME.c_str());
+                motion.save_vectors (vec_L, ui->VideoFile->text().toStdString());
+                motion.DOF_LIE(ui->VideoFile->text().toStdString());
         }
     }
     else
     {
-        motion.get_homography_sequence(ui->VideoFile->text().toStdString(),vec_H);
+        //////////////////////////////
+        char *video = new char[ui->VideoFile->text().toStdString().length() + 1];
+        strcpy(video, ui->VideoFile->text().toStdString().c_str());
+
+        VideoCapture capture;
+        capture.open(video);
+        Mat frame;
+        vector<Mat> outputVideo;
+
+        if(!capture.isOpened())
+        {
+            QMessageBox msgBox;
+            msgBox.setText("Could not initialize capturing..");
+            //msgBox.setInformativeText("Do you want to save your changes?");
+            //msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+            //msgBox.setDefaultButton(QMessageBox::Save);
+            int ret = msgBox.exec();
+            //printf( "Could not initialize capturing..\n" );
+            //return -1;
+        }
+
+        for(;;)
+        {
+            capture >> frame;
+            Mat tmp=frame.clone();  //Clone the frame or allways points the same one
+            if (frame.empty())
+                break;
+            outputVideo.push_back(tmp);
+        }
+       //////////////////////////////
+        motion.get_homography_sequence(outputVideo,vec_H);
         for (int i=0;i<vec_H.size(); i++)
         {
             Mat L = motion.compute_Liecoeffs (vec_H[i]);
@@ -291,7 +332,7 @@ void MainWindow::on_ProcesarButton_clicked()
 //        motion.construct_timeseries (vec_L, vec_LTS);
         /* save vectors in output files */
         motion.save_vectors (vec_L, ui->VideoFile->text().toStdString());
-        motion.DOF_LIE(ui->VideoFile->text().toStdString(),1);
+        motion.DOF_LIE(ui->VideoFile->text().toStdString());
     }
 }
 

@@ -12,28 +12,21 @@ CameraMotion::~CameraMotion()
 
 }
 
+#include "libavcodec/avcodec.h"
+#include "libavformat/avformat.h"
+
 using namespace cv;
 using namespace std;
 
-int CameraMotion::get_homography_sequence (std::string fileName, vector<Mat>& vec_H) {
-
-  char *video = new char[fileName.length() + 1];
-  strcpy(video, fileName.c_str());
-
-  VideoCapture capture;
-  capture.open(video);
-
-  if(!capture.isOpened())
-  {
-      QMessageBox msgBox;
-      msgBox.setText("Could not initialize capturing..");
-      //msgBox.setInformativeText("Do you want to save your changes?");
-      //msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-      //msgBox.setDefaultButton(QMessageBox::Save);
-      int ret = msgBox.exec();
-      //printf( "Could not initialize capturing..\n" );
-      return -1;
-  }
+int CameraMotion::get_homography_sequence (vector<Mat> Video, vector<Mat>& vec_H) {
+/*
+    for (int jj=0;jj<Video.size();++jj)
+    {
+        imshow("1",Video.at(jj));
+        if(cv::waitKey(30) >= 0) break;
+        //waitKey(20); // waits to display frame
+    }
+*/
 
   BriefDescriptorExtractor brief(32);
   Mat frame;
@@ -56,12 +49,9 @@ int CameraMotion::get_homography_sequence (std::string fileName, vector<Mat>& ve
   GridAdaptedFeatureDetector detector(new FastFeatureDetector(10, true), DESIRED_FTRS, 4, 4);
   Mat H;
   Mat H_prev = Mat::eye(3, 3, CV_64F);
-  for (;;)
+  for (int n=0;n<Video.size();++n)
   {
-    capture >> frame;
-    if (frame.empty())
-      break;
-
+    frame=Video.at(n);
     cvtColor(frame, gray, CV_RGB2GRAY);
     //Find interest points
     detector.detect(gray, query_kpts);
@@ -75,7 +65,7 @@ int CameraMotion::get_homography_sequence (std::string fileName, vector<Mat>& ve
       Mat mask = windowedMatchingMask(test_kpts, train_kpts, 25, 25);
       desc_matcher.match(query_desc, train_desc, matches, mask);
 
-      drawKeypoints(frame, test_kpts, frame, Scalar(255, 0, 0), DrawMatchesFlags::DRAW_OVER_OUTIMG);
+//      drawKeypoints(frame, test_kpts, frame, Scalar(255, 0, 0), DrawMatchesFlags::DRAW_OVER_OUTIMG);
 
       matches2points(train_kpts, query_kpts, matches, train_pts, query_pts);
 
@@ -249,19 +239,11 @@ void CameraMotion::save_vectors (const vector<Mat>& x, std::string fileName)
   fclose(fp);
 }
 
-void CameraMotion::DOF_LIE (std::string fileName, int level)
+//void CameraMotion::DOF_LIE (std::string fileName, int level)
+void CameraMotion::DOF_LIE (std::string fileName)
 {
   FILE *f_DOF,*f_LIE,*f_OUT;
-  string n_DOF;
-  if (level==1)
-  {
-        n_DOF=fileName.substr(0,fileName.find_last_of("."))+".txt";
-  }
-  else
-  {
-        n_DOF=fileName.substr(0,fileName.find_last_of("_"))+".txt";
-  }
-
+  string n_DOF=fileName.substr(0,fileName.find_last_of("."))+".txt";
   string n_LIE=fileName.substr(0,fileName.find_last_of("."))+".lie";
   string n_OUT=fileName.substr(0,fileName.find_last_of("."))+".out";
 
@@ -417,47 +399,48 @@ int CameraMotion::subdivide(std::string fileName, const int rowDivisor, const in
         if(!maskImg.data || maskImg.empty())
             std::cerr << "Problem Loading Image" << std::endl;
 
-        // check if divisors fit to image dimensions
-        if(img.cols % colDivisor == 0 && img.rows % rowDivisor == 0)
+        // check if divisors fit to image dimensions or remove the necesary cols, rows to fit
+        while(img.cols % colDivisor != 0)
         {
-            for(int y = 0; y < img.cols; y += img.cols / colDivisor)
+            img.cols--;
+        }
+        while (img.rows % rowDivisor != 0)
+        {
+            img.rows--;
+        }
+        for(int y = 0; y < img.cols; y += img.cols / colDivisor)
+        {
+            for(int x = 0; x < img.rows; x += img.rows / rowDivisor)
             {
-                for(int x = 0; x < img.rows; x += img.rows / rowDivisor)
-                {
-                    blocks.push_back(img(cv::Rect(y, x, (img.cols / colDivisor), (img.rows / rowDivisor))).clone());
-                    //rectangle(maskImg, Point(y, x), Point(y + (maskImg.cols / colDivisor) - 1, x + (maskImg.rows / rowDivisor) - 1), CV_RGB(255, 0, 0), 1); // visualization
+                blocks.push_back(img(cv::Rect(y, x, (img.cols / colDivisor), (img.rows / rowDivisor))).clone());
 
-                    //imshow("Image", maskImg); // visualization
-                    //waitKey(0); // visualization
-                }
+                //rectangle(maskImg, Point(y, x), Point(y + (maskImg.cols / colDivisor) - 1, x + (maskImg.rows / rowDivisor) - 1), CV_RGB(255, 0, 0), 1); // visualization
+                //imshow("Image", maskImg); // visualization
+                //waitKey(0); // visualization
             }
-        }else if(img.cols % colDivisor != 0)
-        {
-            cerr << "Error: Please use another divisor for the column split." << endl;
-            exit(1);
-        }else if(img.rows % rowDivisor != 0)
-        {
-            cerr << "Error: Please use another divisor for the row split." << endl;
-            exit(1);
         }
     }
-
+/*
     VideoWriter outputVideo;
     string NAME;
     //Size S = Size((int) capture.get(CV_CAP_PROP_FRAME_WIDTH),    // Acquire input size
     //              (int) capture.get(CV_CAP_PROP_FRAME_HEIGHT));
     // Transform from int to char via Bitwise operators
     int ex = static_cast<int>(capture.get(CV_CAP_PROP_FOURCC));     // Get Codec Type- Int form
-    //char EXT[] = {(char)(ex & 0XFF) , (char)((ex & 0XFF00) >> 8),(char)((ex & 0XFF0000) >> 16),(char)((ex & 0XFF000000) >> 24), 0};
-    //cout << "Input codec type: " << EXT << endl;
-    //int ll=capture.get(CV_CAP_PROP_FRAME_COUNT);
+    char EXT[] = {(char)(ex & 0XFF) , (char)((ex & 0XFF00) >> 8),(char)((ex & 0XFF0000) >> 16),(char)((ex & 0XFF000000) >> 24), 0};
+    cout << "Input codec type: " << EXT << endl;
+    int ll=capture.get(CV_CAP_PROP_FRAME_COUNT);
 
     for (int k=0; k<(colDivisor*rowDivisor); k++)
     {
         stringstream converter;
         converter << k;
         NAME=fileName.substr(0,fileName.find_last_of("."))+"_"+converter.str()+".avi";
-        outputVideo.open(NAME.c_str(), CV_FOURCC('X','V','I','D'), capture.get(CV_CAP_PROP_FPS), S, true);
+
+        //outputVideo.open(NAME.c_str(), CV_FOURCC('X','V','I','D'), capture.get(CV_CAP_PROP_FPS), S, true);
+        outputVideo.open(NAME.c_str(), 0, capture.get(CV_CAP_PROP_FPS), S, true);
+        //outputVideo.open(NAME.c_str(), CV_FOURCC('M','P','E','G'), capture.get(CV_CAP_PROP_FPS), S, true);
+        //outputVideo.open(NAME.c_str(), ex, capture.get(CV_CAP_PROP_FPS), S, true);
         if(!outputVideo.isOpened())
         {
             QMessageBox msgBox;
@@ -472,9 +455,11 @@ int CameraMotion::subdivide(std::string fileName, const int rowDivisor, const in
         for (int l=0; l<blocks.size(); l=l+(colDivisor*rowDivisor))
         {
             outputVideo << blocks.at(k+l);
+            //outputVideo.write(blocks.at(k+l));
         }
         outputVideo.release();
     }
     capture.release();
-    return EXIT_SUCCESS;
+*/
+    return EXIT_SUCCESS;    
 }
