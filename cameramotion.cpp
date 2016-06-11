@@ -65,7 +65,9 @@ int CameraMotion::get_homography_sequence (vector<Mat> Video, vector<Mat>& vec_H
       Mat mask = windowedMatchingMask(test_kpts, train_kpts, 25, 25);
       desc_matcher.match(query_desc, train_desc, matches, mask);
 
-//      drawKeypoints(frame, test_kpts, frame, Scalar(255, 0, 0), DrawMatchesFlags::DRAW_OVER_OUTIMG);
+      drawKeypoints(frame, test_kpts, frame, Scalar(255, 0, 0), DrawMatchesFlags::DRAW_OVER_OUTIMG);    //For image show
+      imshow("frame", frame); //For image show
+      waitKey(2);     //For Image show
 
       matches2points(train_kpts, query_kpts, matches, train_pts, query_pts);
 
@@ -75,20 +77,19 @@ int CameraMotion::get_homography_sequence (vector<Mat> Video, vector<Mat>& vec_H
           H_prev = H;
         } else {
           resetH(H_prev);
-          //drawMatchesRelative(train_kpts, query_kpts, matches, frame, match_mask);
+          //drawMatchesRelative(train_kpts, query_kpts, matches, frame, match_mask);  //For image show
         }
       } else
         resetH(H_prev);
     } else {
       H_prev = Mat::eye(3, 3, CV_64F);
       Mat out;
-      //drawKeypoints(gray, query_kpts, out);
+      drawKeypoints(gray, query_kpts, out); //For Image Show
       frame = out;
-
     }
     vec_H.push_back(H_prev.reshape(0,9).t());
-    //imshow("frame", frame);
-    //waitKey(2);
+    imshow("frame2", frame); //For image show
+    waitKey(2);     //For Image show
     train_kpts = query_kpts;
     query_desc.copyTo(train_desc);
   }
